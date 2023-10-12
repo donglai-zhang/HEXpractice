@@ -21,21 +21,21 @@ class HEX:
         self.dRwall = np.log(ro / ri) / (2 * self.k * np.pi * self.dx)      # K/W, wall thermal resistance of each node
 
         '''Parameters dependent on fouling thickness'''
-        self.rfi = np.ones(self.n) * self.ri      # inner radius beyond fouling layer
-        self.rfo = np.ones(self.n) * self.ro      # outer radius beyond fouling layer
+        self.rfi = self.ri      # inner radius beyond fouling layer
+        self.rfo = self.ro      # outer radius beyond fouling layer
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
 
     def inner_Cross(self, rfi):
-        Ac1 = np.ones(self.n) * np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
-        D1 = np.ones(self.n) * 2 * rfi      # m, charateristic length of inner pipe
-        As1 = np.ones(self.n) * np.pi * D1 * self.dx         # m^2, inner pipe surface area of each node
+        Ac1 = np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
+        D1 = 2 * rfi      # m, charateristic length of inner pipe
+        As1 = np.pi * D1 * self.dx         # m^2, inner pipe surface area of each node
         return Ac1, D1, As1
 
     def outer_Cross(self, rfo):
-        Ac2 = np.ones(self.n) * np.pi * (self.R ** 2 - rfo ** 2)        # m^2, cross-sectional area of outer annulus
-        D2 = np.ones(self.n) * 4 * Ac2 / (2 * np.pi * (self.R + rfo))      # m, charateristic length of shell
-        As2 = np.ones(self.n) * 2 * rfo * self.dx         # m^2, outer pipe surface area of each node
+        Ac2 = np.pi * (self.R ** 2 - rfo ** 2)        # m^2, cross-sectional area of outer annulus
+        D2 = 4 * Ac2 / (2 * np.pi * (self.R + rfo))      # m, charateristic length of shell
+        As2 = 2 * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
 
     '''
