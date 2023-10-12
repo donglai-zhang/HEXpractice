@@ -7,7 +7,7 @@ from HexClasses import Fouling
 from tqdm import tqdm
 
 # time setting
-t_final = 10000000       # s, simulation time
+t_final = 50000       # s, simulation time
 dt = 1          # s, time step
 t = np.arange(0, t_final, dt)
 
@@ -63,13 +63,13 @@ if __name__ == '__main__':
     # initialise variables
     L = hex.L    
     n = hex.n
-    T0 = hex.T0 
-    Ac1 = hex.Ac1
-    Ac2 = hex.Ac2
+    T0 = hex.T0
+    Ac1 = hex.Ac1 * np.ones(n)
+    Ac2 = hex.Ac2 * np.ones(n)
     dx = hex.dx
     fluid1.get_Prams(Ac1, hex.D1, hex.As1)
     fluid2.get_Prams(Ac2, hex.D2, hex.As2)
-    UA = 1 / (fluid1.R + hex.dRwall + fluid2.R)
+    UA = 1 / (fluid1.R + hex.dRwall + fluid2.R)  * np.ones(n)
 
     append_Vars(0, np.mean(UA), 
                 0, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.h), 0, 0, 0,
