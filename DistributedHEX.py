@@ -226,6 +226,6 @@ dfs["Sigma2"] = Sigma2
 dfs["Rf2"] = Rf2
 
 if f_type == 0:
-    dfs.to_csv("../../py_data/HEXPractice/parallel.csv", index=False)
+    dfs.to_csv("../../../py_data/HEXPractice/parallel.csv", index=False)
 else:
     dfs.to_csv("../../py_data/HEXPractice/counter.csv", index=False)
