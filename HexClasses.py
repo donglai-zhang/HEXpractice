@@ -25,6 +25,8 @@ class HEX:
         self.rfo = self.ro      # outer radius beyond fouling layer
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
+        self.Rfi = self.inner_Rf(self.ri, self.rfi, 0.2, self.dx)
+        self.Rfo = self.outer_Rf(self.ri, self.rfo, 0.2, self.dx)
 
     def inner_Cross(self, rfi):
         Ac1 = np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
@@ -37,17 +39,25 @@ class HEX:
         D2 = 4 * Ac2 / (2 * np.pi * (self.R + rfo))      # m, charateristic length of shell
         As2 = 2 * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
+    
+    def inner_Rf(self, ri, rfi, k, dx):
+        return np.log(ri / rfi) / (2 * np.pi * k * dx)          # K/W, inner deposit fouling resistance
+    
+    def outer_Rf(self, ri, rfo, k, dx):
+        return np.log(rfo / ri) / (2 * np.pi * k * dx)          # K/W, inner deposit fouling resistance
 
     '''
     update parameters dependent on the fouling thickness
     inputs:
     sigmai, sigmao: innter/outter fouling thickness
     '''
-    def update_Prams(self, sigma1, sigma2):
+    def update_Prams(self, sigma1, sigma2, k1, k2):
         self.rfi = self.ri - sigma1
         self.rfo = self.ro + sigma2
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
+        self.Rfi = self.inner_Rf(self.ri, self.rfi, k1, self.dx)
+        self.Rfo = self.outer_Rf(self.ri, self.rfo, k2, self.dx)
 
 class Fluid:
     def __init__(self, 
@@ -133,13 +143,10 @@ class Fluid:
 
 class Fouling:
     def __init__(self,
-                 Rf = 0,            # K/W, fouling resistance
                  simga = 0          # m, fouling layer  
                  ):
-        self.Rf = Rf
-        self.sigma = simga
-        # self.dRfs = []              # array recording dRf/dt
         # self.dSigmas = []           # array recording dsigma/dt
+        self.sigma = simga
 
         '''Constants'''
         self.alpha = 0.0139         # K*m^2/W*s, constant fouling coefficient
@@ -147,7 +154,7 @@ class Fouling:
         self.gamma = 4.03e-11       # m^4*N*k/J, constant fouling coefficient
         self.Ef = 48000             # J/mol, constant activation energy
         self.Rg = 8.3145            # J/K*model, gas constant
-
+        self.k_l0 = 0.2             # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
     ''' 
     get threshold fouling rate and thickness
     inputs:
@@ -158,9 +165,9 @@ class Fouling:
     k_L0: W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
     '''
     def THfouling(self, Re, Pr, Tf, tau, k_L0 = 0.2):
-        dRfdt = self.alpha * Re ** self.beta * Pr ** (-0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau
+        dRfdt = self.alpha * Re ** self.beta * Pr ** (-0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
         dSigmadt = k_L0 * dRfdt
-        return dRfdt, dSigmadt
+        return dSigmadt
     
     '''
     start to simulate fouling
@@ -169,8 +176,6 @@ class Fouling:
     dt: time difference
     '''
     def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, dt):
-        dRfdt, dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
-        # self.dRfs.append(dRfdt)
+        dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
         # self.dSigmas.append(dSigmadt)
-        self.Rf += dRfdt * dt
         self.sigma += dSigmadt * dt
