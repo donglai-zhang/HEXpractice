@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # plt.ylabel("Temperature (K)")
     # lplt = 500        # plot lag
     
-    f_type = 1
+    f_type = 0
     
     # Parallel flow: 0
     if f_type == 0:
@@ -123,20 +123,21 @@ if __name__ == '__main__':
             # update parameters
             depo1.FoulingSimu(fluid1.Re, fluid1.Pr, T1, fluid1.tau, 0.2, dt)
             depo2.FoulingSimu(fluid2.Re, fluid1.Pr, T2, fluid2.tau, 0.2, dt)
-            hex.update_Prams(depo1.sigma, depo2.sigma)
+            hex.update_Prams(depo1.sigma, depo2.sigma, depo1.k_l0, depo2.k_l0)
             Ac1 = hex.Ac1
             Ac2 = hex.Ac2
             dx = hex.dx
             fluid1.get_Prams(Ac1, hex.D1, hex.As1)
             fluid2.get_Prams(Ac2, hex.D2, hex.As2)
-            UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)
+
+            UA = 1 / (fluid1.R + hex.Rfi + hex.dRwall + hex.Rfo + fluid2.R)
             dPdx = fluid1.get_PressureDrop(fluid1.Cf, fluid1.v, hex.rfi)
             # append values
 
             if np.mod(ts, 3600) == 0.0:
                 append_Vars(ts // 3600, np.mean(UA), 
-                    T1[-1], np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.h), np.sum(dPdx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
-                    T2[-1], np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid1.h), np.mean(depo2.sigma), np.mean(depo2.Rf))
+                    T1[-1], np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.h), np.sum(dPdx * dx), np.mean(depo1.sigma), np.mean(hex.Rfi),
+                    T2[-1], np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid1.h), np.mean(depo2.sigma), np.mean(hex.Rfo))
 
     #         if ((j % lplt) == 0):
     #             T_new = T1
@@ -174,20 +175,22 @@ if __name__ == '__main__':
             # update parameters
             depo1.FoulingSimu(fluid1.Re, fluid1.Pr, T1, fluid1.tau, 0.2, dt)
             depo2.FoulingSimu(fluid2.Re, fluid1.Pr, T2, fluid2.tau, 0.2, dt)
-            hex.update_Prams(depo1.sigma, depo2.sigma)
+            hex.update_Prams(depo1.sigma, depo2.sigma, depo1.k_l0, depo2.k_l0)
             Ac1 = hex.Ac1
             Ac2 = hex.Ac2
             dx = hex.dx
             fluid1.get_Prams(Ac1, hex.D1, hex.As1)
             fluid2.get_Prams(Ac2, hex.D2, hex.As2)
-            UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)
+
+            UA = 1 / (fluid1.R + hex.Rfi + hex.dRwall + hex.Rfo + fluid2.R)
             dPdx = fluid1.get_PressureDrop(fluid1.Cf, fluid1.v, hex.rfi)
-            
             # append values
+
             if np.mod(ts, 3600) == 0.0:
                 append_Vars(ts // 3600, np.mean(UA), 
-                    T1[-1], np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.h), np.sum(dPdx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
-                    T2[0], np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid1.h), np.mean(depo2.sigma), np.mean(depo2.Rf))
+                    T1[-1], np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.h), np.sum(dPdx * dx), np.mean(depo1.sigma), np.mean(hex.Rfi),
+                    T2[-1], np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid1.h), np.mean(depo2.sigma), np.mean(hex.Rfo))
+
     #         if ((j % lplt) == 0):
     #             T_new = T1
 
@@ -226,6 +229,6 @@ dfs["Sigma2"] = Sigma2
 dfs["Rf2"] = Rf2
 
 if f_type == 0:
-    dfs.to_csv("../../../py_data/HEXPractice/parallel.csv", index=False)
+    dfs.to_csv("../HEXdata/parallel.csv", index=False)
 else:
-    dfs.to_csv("../../py_data/HEXPractice/counter.csv", index=False)
+    dfs.to_csv("../HEXdata/counter.csv", index=False)
