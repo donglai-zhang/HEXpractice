@@ -25,8 +25,8 @@ class HEX:
         self.rfo = self.ro      # outer radius beyond fouling layer
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.inner_Rf(self.ri, self.rfi, 0.2, self.dx)
-        self.Rfo = self.outer_Rf(self.ri, self.rfo, 0.2, self.dx)
+        self.Rfi = self.get_Rf(self.ri, self.rfi, 0.2)
+        self.Rfo = self.get_Rf(self.ri, self.rfo, 0.2)
 
     def inner_Cross(self, rfi):
         Ac1 = np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
@@ -40,11 +40,10 @@ class HEX:
         As2 = 2 * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
     
-    def inner_Rf(self, ri, rfi, k, dx):
-        return np.log(ri / rfi) / (2 * np.pi * k * dx)          # K/W, inner deposit fouling resistance
-    
-    def outer_Rf(self, ri, rfo, k, dx):
-        return np.log(rfo / ri) / (2 * np.pi * k * dx)          # K/W, inner deposit fouling resistance
+    def get_Rf(self, ri, Rfr, k):
+        r_max = np.maximum(ri, Rfr)
+        r_min = np.minimum(ri, Rfr)
+        return np.log(r_max / r_min) / (2 * np.pi * k * self.dx)          # K/W, inner/outer deposit fouling resistance
 
     '''
     update parameters dependent on the fouling thickness
@@ -56,8 +55,8 @@ class HEX:
         self.rfo = self.ro + sigma2
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.inner_Rf(self.ri, self.rfi, k1, self.dx)
-        self.Rfo = self.outer_Rf(self.ri, self.rfo, k2, self.dx)
+        self.Rfi = self.get_Rf(self.ri, self.rfi, k1)
+        self.Rfo = self.get_Rf(self.ri, self.rfo, k2)
 
 class Fluid:
     def __init__(self, 
@@ -74,7 +73,7 @@ class Fluid:
         self.Ti = Ti
         self.k = k
         self.mu = mu
-        self.V = m / rho       # m^3/s, volume of flow rate
+        self.V = m / rho       # m^3/s, volume rate
     
     ''' 
     get fluid velocity
@@ -131,7 +130,7 @@ class Fluid:
         self.Pr = self.get_Pr()
         self.Nu = self.get_Nu(self.Re, self.Pr)
         self.h = self.get_h(self.Nu, D)     # W/m^2*K, convective coefficient 
-        self.R = 1 / (As * self.h)      # K/W, fluid thermal resistance
+        self.R = 1 / (As * self.h)      # K/W, convective thermal resistance
         self.Cf = self.get_Fricion(self.Re)
         self.tau = self.get_Shear(self.Cf, self.v)
 
@@ -143,10 +142,12 @@ class Fluid:
 
 class Fouling:
     def __init__(self,
-                 simga = 0          # m, fouling layer  
+                 simga = 0,           # m, fouling layer
+                 k_10 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
                  ):
         # self.dSigmas = []           # array recording dsigma/dt
         self.sigma = simga
+        self.k_l0 = k_10             
 
         '''Constants'''
         self.alpha = 0.0139         # K*m^2/W*s, constant fouling coefficient
@@ -154,7 +155,7 @@ class Fouling:
         self.gamma = 4.03e-11       # m^4*N*k/J, constant fouling coefficient
         self.Ef = 48000             # J/mol, constant activation energy
         self.Rg = 8.3145            # J/K*model, gas constant
-        self.k_l0 = 0.2             # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
+
     ''' 
     get threshold fouling rate and thickness
     inputs:
