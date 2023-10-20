@@ -26,7 +26,7 @@ class HEX:
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
         self.Rfi = self.get_Rf(self.ri, self.rfi, 0.2)
-        self.Rfo = self.get_Rf(self.ri, self.rfo, 0.2)
+        self.Rfo = self.get_Rf(self.ro, self.rfo, 0.2)
 
     def inner_Cross(self, rfi):
         Ac1 = np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
@@ -56,7 +56,7 @@ class HEX:
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
         self.Rfi = self.get_Rf(self.ri, self.rfi, k1)
-        self.Rfo = self.get_Rf(self.ri, self.rfo, k2)
+        self.Rfo = self.get_Rf(self.ro, self.rfo, k2)
 
 class Fluid:
     def __init__(self, 
@@ -175,8 +175,9 @@ class Fouling:
     inputs
     inputs of THfouling
     dt: time difference
+    period: simulation period
     '''
-    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, dt):
+    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, dt, period):
         dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
         # self.dSigmas.append(dSigmadt)
-        self.sigma += dSigmadt * dt
+        self.sigma += dSigmadt * period / dt
