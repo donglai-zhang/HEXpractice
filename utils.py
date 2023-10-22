@@ -28,9 +28,9 @@ def get_Q(UA, T1, T2):
 generate random inlet parameters
 '''
 def gen_Inlets():
-    T1i = 273 + 200 * np.random.rand()
-    m1 = 4 + 5 * np.random.rand()
-    T2i = 500 + 100 * np.random.rand()
-    m2 = 4 + 5 * np.random.rand()
+    T1i = 273 + 30 * np.random.rand()
+    m1 = 4 + 4 * np.random.rand()
+    T2i = 600 + 30 * np.random.rand()
+    m2 = 4 + 4 * np.random.rand()
 
     return T1i, m1, T2i, m2

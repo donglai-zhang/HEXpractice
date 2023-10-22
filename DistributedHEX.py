@@ -67,9 +67,10 @@ def run_HEX(k, hex, f_type, t, dt, eps, fluid1, fluid2, depo1, depo2, lplt):
     print("Day", k)
     x = np.linspace(dx / 2, hex.L - dx / 2, n)
 
-    # reset fluid properties
+    # # reset fluid properties
     T1i, m1, T2i, m2 = gen_Inlets()
-    fluid1.Ti, fluid1.m, fluid2.Ti, fluid2.m = T1i, m1, T2i, m2
+    fluid1.get_Inlets(T1i, m1)
+    fluid2.get_Inlets(T2i, m2)
 
     Ac1 = hex.Ac1 * np.ones(n)
     Ac2 = hex.Ac2 * np.ones(n)
@@ -120,13 +121,13 @@ def run_HEX(k, hex, f_type, t, dt, eps, fluid1, fluid2, depo1, depo2, lplt):
                 print("Steady state reaches at t =", ts, "secs.")
                 plt.close()
                 
-                # heat duty and 
+                # heat duty and film temperature
                 dQdt = get_Q(UA, T1, T2)
                 Tf1, Tf2 = get_Tf(dQdt, T1, T2, fluid1.R, fluid2.R)
 
                 # simulate fouling thickness for the next day
-                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, dt, 24 * 3600)
-                depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, dt, 24 * 3600)
+                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, 24 * 3600)
+                # depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, 24 * 3600)
 
                 # update HEX parameters
                 hex.update_Prams(depo1.sigma, depo2.sigma, depo1.k_l0, depo2.k_l0)
@@ -169,13 +170,13 @@ def run_HEX(k, hex, f_type, t, dt, eps, fluid1, fluid2, depo1, depo2, lplt):
             if np.sum(dT1dt) < eps and np.sum(dT2dt) < eps:
                 print("Steady state reaches at t =", ts, "secs.")
 
-                # heat duty and 
+                # heat duty and film temperature
                 dQdt = get_Q(UA, T1, T2)
                 Tf1, Tf2 = get_Tf(dQdt, T1, T2, fluid1.R, fluid2.R)
 
                 # simulate fouling thickness for the next day
-                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, dt, 24 * 3600)
-                depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, dt, 24 * 3600)
+                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, 24 * 3600)
+                # depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, 24 * 3600)
 
                 # update HEX parameters
                 hex.update_Prams(depo1.sigma, depo2.sigma, depo1.k_l0, depo2.k_l0)
@@ -204,8 +205,8 @@ if __name__ == '__main__':
     depo2 = Fouling()
     
     # initialise fluids
-    fluid1 = Fluid(Cp=470, rho=3100)
-    fluid2 = Fluid(Cp=500, rho=1000)
+    fluid1 = Fluid(Ti=273, Cp=470, rho=3100)
+    fluid2 = Fluid(Ti=600, Cp=500, rho=1000)
     
     # start simulation
     f_type = 1      # HEX mode: 0 - parallel, 1 - counter

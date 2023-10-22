@@ -37,7 +37,7 @@ class HEX:
     def outer_Cross(self, rfo):
         Ac2 = np.pi * (self.R ** 2 - rfo ** 2)        # m^2, cross-sectional area of outer annulus
         D2 = 4 * Ac2 / (2 * np.pi * (self.R + rfo))      # m, charateristic length of shell
-        As2 = 2 * rfo * self.dx         # m^2, outer pipe surface area of each node
+        As2 = 2 * np.pi * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
     
     def get_Rf(self, ri, Rfr, k):
@@ -75,6 +75,10 @@ class Fluid:
         self.mu = mu
         self.V = m / rho       # m^3/s, volume rate
     
+    def get_Inlets(self, Ti, m):
+        self.Ti = Ti
+        self.m = m
+        self.V = self.m / self.rho 
     ''' 
     get fluid velocity
     inputs
@@ -101,7 +105,7 @@ class Fluid:
     get Nusselt number 
     '''
     def get_Nu(self, Re, Pr):
-        return 0.023 * (Re ** 0.8) * (Pr ** 0.4)
+        return 0.023 * np.power(Re, 0.8) * np.power(Pr, 0.4)
 
     ''' 
     get Convective coefficient 
@@ -113,7 +117,7 @@ class Fluid:
     get friction factor
     '''
     def get_Fricion(self, Re):
-        return 0.0035 + 0.0264 * Re ** (-0.42)
+        return 0.0035 + 0.0264 * np.power(Re, -0.42)
     
     '''
     get shear stress
@@ -138,7 +142,7 @@ class Fluid:
     get pressure drop
     '''
     def get_PressureDrop(self, Cf, v, Rflow):
-        return 4 * Cf * self.rho * v ** 2 / (4 * Rflow)
+        return Cf * self.rho * v ** 2 / Rflow
 
 class Fouling:
     def __init__(self,
@@ -177,7 +181,7 @@ class Fouling:
     dt: time difference
     period: simulation period
     '''
-    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, dt, period):
+    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, period):
         dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
         # self.dSigmas.append(dSigmadt)
-        self.sigma += dSigmadt * period / dt
+        self.sigma += dSigmadt * period
