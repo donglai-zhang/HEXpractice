@@ -28,53 +28,49 @@ DistrubutedHEX:
     4 Run recursively for further days.
 
   Description of objects:
-    object: fluid1 (cold)
-      -mass rate: m = 5 kg/s
-      -heat compacity: Cp = 470 J/kg*K
-      -density: rho = 3100 kg/m^3
-      -Inlet temperature: Ti = 303 K
-      -conductivity: k = 0.7 W/m*K
-      -viscosity: mu = 0.001 Pa*s
+    object: fluid 1 (cold)
+      -mass rate: m = 0.3 kg/s or random
+      -heat compacity: Cp
+      -density: rho
+      -Inlet temperature: Ti 573 K or random
+      -conductivity: k
+      -viscosity: mu = 4e-6 Pa*s
     object: fluid2 (hot)
-      -mass rate: m = 7 kg/s
-      -heat compacity: Cp = 500 J/kg*K
-      -density: rho = 1000 kg/m^3
-      -Inlet temperature: Ti = 600 K
-      -conductivity: k = 0.7 W/m*K
-      -viscosity: mu = 0.001 Pa*s
+      -mass rate: m = 1 kg/s or random
+      -heat compacity: Cp
+      -density: rho
+      -Inlet temperature: Ti
+      -conductivity: k
+      -viscosity: mu
     object: hex
-      -hex length: 6 m
-      -tube inner radius: ri = 0.3 m
-      -tube outer radius: ro = 0.35 m
+      -hex length: 6.1 m
+      -tube inner radius: ri = 9.93e-3 m
+      -tube outer radius: ro = 12.7e-3 m
       -shell outer radius: R = 0.6 m
       -material conductivity: 397 W/m*K
       -number of nodes: n = 100
       -initial temperature: 273 K
     object: deposit1/deposit2
-      -Rf: fouling resistance
-      -sigma: fouling thickness
+      -sigma: m, fouling thickness
+      -k_l0: material thermal conductivity of a freshly deposited material (lower limit)
 
   Metadata of CSV dataframe
     -Day: the HEX running day
-    -F1m: kg/s, fluid1 mass flow
+    -F1m: kg/s, fluid 1 mass flow
     -F1i: K, flui11 inlet temperature
-    -F1o: K, fluid1 outlet temperature
-    -F1v: m/s, fluid1 AVERAGE velocity
-    -F1D: m, fluid1 AVERAGE hydraulic diameter
-    -F1Re: fluid1 AVERAGE Reynolds number
-    -F1h: W/m2*K, fluid1 AVERAGE convective coefficient
+    -F1o: K, fluid 1 outlet temperature
+    -F1v: m/s, fluid 1 AVERAGE velocity
+    -F1D: m, fluid 1 AVERAGE hydraulic diameter
+    -F1Re: fluid 1 AVERAGE Reynolds number
+    -F1Nu: fluid 1 Nusselt number
+    -F1h: W/m2*K, fluid 1 AVERAGE convective coefficient
+    -F1R: K/W, fluid 1 convective resistance
+    -F1Cf: fluid 1 friction factor
+    -F1Tau: Pa, fluid 1 shear stress
     -dP: Pa, tube side OVERALL pressure drop
     -Sigma1: tube side AVERAGE fouling thickness
     -Rf1: K/W, tube side AVERAGE fouling resistance
-    -F1m: kg/s, fluid2 mass flow
-    -F1i: K, flui12 inlet temperature
-    -F2o: K, fluid2 outlet temperature
-    -F2v: m/s, fluid2 AVERAGE velocity
-    -F2D: m, fluid2 AVERAGE hydraulic diameter
-    -F2Re: fluid2 AVERAGE Reynolds number
-    -F2h: W/m2*K, fluid2 AVERAGE convective coefficient
-    -Sigm2: tube side AVERAGE fouling thickness
-    -Rf2: K/W, tube side AVERAGE fouling resistance
+    -F2*: fluid 2 parameters, see above
     -UA: W*m^2/n^2*k AVERAGE heat transfer coefficient time surface area (1 / Total Resistance per node), because the overall UA is not a simple arithmetic addition
     -Q: J/t, OVERALL heat duty
     

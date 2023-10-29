@@ -147,18 +147,26 @@ class Fluid:
 class Fouling:
     def __init__(self,
                  simga = 0,           # m, fouling layer
-                 k_10 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
+                 k_l0 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
+                 mode = "CF"          # parameter mode
                  ):
         # self.dSigmas = []           # array recording dsigma/dt
         self.sigma = simga
-        self.k_l0 = k_10             
+        self.k_l0 = k_l0             
 
         '''Constants'''
-        self.alpha = 0.0139         # K*m^2/W*s, constant fouling coefficient
-        self.beta = -0.66           # constant fouling coefficient
-        self.gamma = 4.03e-11       # m^4*N*k/J, constant fouling coefficient
-        self.Ef = 48000             # J/mol, constant activation energy
-        self.Rg = 8.3145            # J/K*model, gas constant
+        self.Rg = 8.3145            # J/K*mol, gas constant
+        
+        if mode == "EDB":
+            # EDB version
+            self.alpha = 0.54           # K*m^2/W*s, constant deposit coefficient
+            self.gamma = 3.45e-9        # m^4*N*k/J, constant supression coefficient
+            self.Ef = 28000             # J/mol, constant activation energy
+        elif mode == "CF":
+            # CF version
+            self.alpha = 0.0139
+            self.gamma = 4.03e-11
+            self.Ef = 48000
 
     ''' 
     get threshold fouling rate and thickness
@@ -170,7 +178,7 @@ class Fouling:
     k_L0: W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
     '''
     def THfouling(self, Re, Pr, Tf, tau, k_L0 = 0.2):
-        dRfdt = self.alpha * Re ** self.beta * Pr ** (-0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
+        dRfdt = self.alpha * np.power(Re, -0.66) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
         dSigmadt = k_L0 * dRfdt
         return dSigmadt
     

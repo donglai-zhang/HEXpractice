@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 class HEX:
     def __init__(self, 
                  L = 6,         # m, pipe length
-                 r1 = 0.1,      # m, pipe radius
-                 r2 = 0.15,     # m, outer pipe radius
+                 r1 = 0.0093,      # m, pipe radius
+                 r2 = 0.0120,     # m, outer pipe radius
                  n = 100,       # of nodes used
                  T0 = 300,      # K, inital temperature of fluid
                  U = 340        # W/n^2*k, oeverall heat transfer coefficient
@@ -27,7 +27,7 @@ class Fluid:
     def __init__(self, 
                  m = 3,        # kg/s, mass of flow rate
                  Cp = 4180,    # J/kg*K, heat capacity of fluid1 (cold)
-                 rho = 1000,   # kg/m^3, density of fluid
+                 rho = 10000,   # kg/m^3, density of fluid
                  Ti = 400,     # K, fluid inlet temperature
                 ):
         self.m = m
@@ -38,8 +38,8 @@ class Fluid:
 if __name__ == '__main__':
     # initialise hex and fluids
     hex = HEX()
-    fluid1 = Fluid()
-    fluid2 = Fluid(m = 5, Cp = 6000, rho = 500, Ti = 1200)
+    fluid1 = Fluid(m=0.3)
+    fluid2 = Fluid(m=0.3, Ti = 600)
     
     # initialise variables
     L = hex.L    
@@ -63,14 +63,14 @@ if __name__ == '__main__':
     T2i = fluid2.Ti
     
     # initialise time and temperatures
-    t_final = 100     # s, simulation time
-    dt = 0.1          # s, time step
+    t_final = 100    # s, simulation time
+    dt = 0.02         # s, time step
     t = np.arange(0, t_final, dt)
     T1 = np.ones(n) * T0
     T2 = T1.copy()
     x = np.linspace(dx / 2, L - dx / 2, n)
-    dT1dt = np.ones(n)
-    dT2dt = np.ones(n)
+    dT1dt = np.zeros(n)
+    dT2dt = np.zeros(n)
     
     plt.figure(figsize=(9, 6))
     plt.xlabel("Distance (m)")
@@ -88,11 +88,14 @@ if __name__ == '__main__':
 
             T1 = T1 + dT1dt * dt
             T2 = T2 + dT2dt * dt
-
+            
+            print("courant 1:", np.max(U * 2 * np.pi * r1 * dx) * dt / dx)
+            
             if ((j % 10) == 0):
                 plt.plot(x, T1, c = "blue", label = "Fluid1 (cold)")
                 plt.plot(x, T2, c = "red", label = "Fluid2 (hot)")
                 plt.axis([0, L, T0 - 2, 1500])
+                plt.legend()
                 plt.plot()
                 plt.pause(0.005)
                 plt.cla()
