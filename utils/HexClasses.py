@@ -140,9 +140,18 @@ class Fluid:
 
     ''' 
     get pressure drop
+    dp/dx = Cf * rho * v ** 2 / Rflow
     '''
     def get_PressureDrop(self, Cf, v, Rflow):
         return Cf * self.rho * v ** 2 / Rflow
+    
+    '''
+    altanative method to get pressure drop of turbulent flow
+    dP = f * L / D * rho * v ** 2 / 2
+    '''
+    def get_PDturbulent(self, Re, dx, D, v):
+        f = np.power(0.79 * np.log(Re) - 1.64, -2)
+        return f * dx / D * self.rho * v ** 2 / 2
 
 class Fouling:
     def __init__(self,
