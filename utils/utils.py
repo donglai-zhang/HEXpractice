@@ -8,9 +8,9 @@ dQdt: J/t, heat duty
 T1/T2: K,cold/hot flow temperatures
 R1/R2: # K/W, convective thermal resistance
 '''
-def get_Tf(hd, T1, T2, R1, R2):
-    Ts1 = hd * R1 + T1         # K, surface temperature
-    Ts2 = T2 - hd * R2
+def get_Tf(Q, T1, T2, R1, R2):
+    Ts1 = Q * R1 + T1         # K, surface temperature
+    Ts2 = T2 - Q * R2
     Tf1 = T1 + 0.55 * (Ts1 - T1)
     Tf2 = Ts2 + 0.55 * (T2 - Ts2)
     return Tf1, Tf2 
