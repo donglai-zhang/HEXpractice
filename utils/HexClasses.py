@@ -60,12 +60,12 @@ class HEX:
 
 class Fluid:
     def __init__(self, 
-                 m = 5,        # kg/s, mass of flow rate
-                 Cp = 4180,    # J/kg*K, heat capacity of fluid1 (cold)
-                 rho = 1000,   # kg/m^3, density of fluid
-                 Ti = 373,     # K, fluid inlet temperature
-                 k = 0.7,      # W/(m*K), fluid thermal conductivity
-                 mu =  0.001   # Pa*s, dynamic viscocity
+                 m = 1,        # kg/s, mass of flow rate
+                 Cp = 4180,    # J/kg*K, heat capacity of fluid1 (cold), default water
+                 rho = 1000,   # kg/m^3, density of fluid, default water
+                 Ti = 373,     # K, fluid inlet temperature, default water
+                 k = 0.7,      # W/(m*K), fluid thermal conductivity, default water
+                 mu = 8.9e-4   # Pa*s, dynamic viscocity
                 ):
         self.m = m
         self.Cp = Cp
@@ -115,12 +115,21 @@ class Fluid:
 
     '''
     get friction factor
+    developed laminar flow: Cf = 64 / Re
+    developed turbulent flow: Cf = (0.79 * log(Re) - 1.64) ^ -2
     '''
     def get_Fricion(self, Re):
-        return 0.0035 + 0.0264 * np.power(Re, -0.42)
+        Cf = np.zeros(len(Re))
+        for re, i in zip(Re, range(len(Re))):
+            if re < 1e4:
+                Cf[i] = 64 / re
+            else: 
+                Cf[i] = np.power(0.79 * np.log(re) - 1.64, -2)
+        return Cf
     
     '''
     get shear stress
+    tau = Cf * rho * v^2 / 2
     '''
     def get_Shear(self, Cf, v):
         return  Cf * self.rho * v ** 2 / 2
@@ -137,27 +146,19 @@ class Fluid:
         self.R = 1 / (As * self.h)      # K/W, convective thermal resistance
         self.Cf = self.get_Fricion(self.Re)
         self.tau = self.get_Shear(self.Cf, self.v)
-
+    
     ''' 
     get pressure drop
-    dp/dx = Cf * rho * v ** 2 / Rflow
+    dP/dL = Cf / D * rho * v ** 2 / 2
     '''
-    def get_PressureDrop(self, Cf, v, Rflow):
-        return Cf * self.rho * v ** 2 / Rflow
-    
-    '''
-    altanative method to get pressure drop of turbulent flow
-    dP = f * L / D * rho * v ** 2 / 2
-    '''
-    def get_PDturbulent(self, Re, dx, D, v):
-        f = np.power(0.79 * np.log(Re) - 1.64, -2)
-        return f * dx / D * self.rho * v ** 2 / 2
+    def get_PressureDrop(self, Cf, D, v):
+        return Cf / D * self.rho * v ** 2 / 2
 
 class Fouling:
     def __init__(self,
                  simga = 0,           # m, fouling layer
                  k_l0 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
-                 mode = "CF"          # parameter mode
+                 pv = "CF"            # parameter version
                  ):
         # self.dSigmas = []           # array recording dsigma/dt
         self.sigma = simga
@@ -166,12 +167,12 @@ class Fouling:
         '''Constants'''
         self.Rg = 8.3145            # J/K*mol, gas constant
         
-        if mode == "EDB":
+        if  pv == "EDB":
             # EDB version
             self.alpha = 0.54           # K*m^2/W*s, constant deposit coefficient
             self.gamma = 3.45e-9        # m^4*N*k/J, constant supression coefficient
             self.Ef = 28000             # J/mol, constant activation energy
-        elif mode == "CF":
+        elif pv == "CF":
             # CF version
             self.alpha = 0.0139
             self.gamma = 4.03e-11

@@ -71,12 +71,12 @@ Metadata of dataframe
   -F1Re: fluid 1 AVERAGE Reynolds number
   -F1Nu: fluid 1 Nusselt number
   -F1h: W/m2*K, fluid 1 AVERAGE convective coefficient
-  -F1R: K/W, fluid 1 convective resistance
+  -F1R: K/W, fluid 1 AVERAGE convective resistance
   -F1Cf: fluid 1 friction factor
   -F1Tau: Pa, fluid 1 shear stress
   -dP1: Pa, tube side OVERALL pressure drop
   -Sigma1: tube side AVERAGE fouling thickness
   -Rf1: K/W, tube side AVERAGE fouling resistance
   -F2*: fluid 2 parameters, see above
-  -UA: W*m^2/n^2*k AVERAGE heat transfer coefficient time surface area (1 / Total Resistance per node), because the overall UA is not a simple arithmetic addition
+  -UA: W*m^2/n^2*k AVERAGE heat transfer coefficient time surface area.
   -Q: J/t, OVERALL heat duty

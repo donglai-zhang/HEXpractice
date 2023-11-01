@@ -22,15 +22,23 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
             depo1,      # deposit layer 1 class
             depo2,      # deposit layer 2 class
             lplt,       # time lag of monitoring plot
-            ran=0       # 1 - generate inlet temperatures and mass flows randomly
+            ran,        # 1 - generate inlet temperatures and mass flows randomly
+            T1min,      # if ran == 1, minimum temperature of fluid 1 
+            T2min,      # if ran == 1, minimum temperature of fluid 2
+            T1diff,     # if ran == 1, maximum temperature difference of fluid 1 
+            T2diff,     # if ran == 1, maximum temperature difference of fluid 2
+            m1min,      # if ran == 1, minimum mass flow, etc.
+            m2min,
+            m1diff,
+            m2diff
             ):
     
     T1i, m1 = fluid1.Ti, fluid1.m
     T2i, m2 = fluid2.Ti, fluid2.m
     # randomly generate fluid properties
     if ran == 1:
-        T1i, m1 = gen_Inlets(Tmin=563, Tdiff=20, mmin=0.25, mdiff=0.1)
-        T2i, m2 = gen_Inlets(Tmin=790, Tdiff=20, mmin=0.9, mdiff=0.2)
+        T1i, m1 = gen_Inlets(Tmin=T1min, Tdiff=T1diff, mmin=m1min, mdiff=m1diff)
+        T2i, m2 = gen_Inlets(Tmin=T2min, Tdiff=T2diff, mmin=m2min, mdiff=m2diff)
         fluid1.get_Inlets(T1i, m1)
         fluid2.get_Inlets(T2i, m2)
     
@@ -41,8 +49,8 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     UA = 1 / (fluid1.R + hex.Rfi + hex.dRwall + hex.Rfo + fluid2.R)       # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
     
     # pressure drops
-    dP1dx = fluid1.get_PressureDrop(fluid1.Cf, fluid1.v, hex.rfi)
-    dP2 = fluid2.get_PDturbulent(fluid2.Re, dx, hex.D2, fluid2.v)
+    dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
+    dP2dx = fluid2.get_PressureDrop(fluid2.Cf, hex.D2, fluid2.v)
     
     dt = 0.5 / np.max(fluid1.v + fluid2.v) * dx      # max courant numebr = 0.5
     t = np.arange(0, t_final, dt)
@@ -56,7 +64,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
 
     dfs.append_Vars(k, np.mean(UA), 
             T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(hex.Rfi),
-            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2), np.mean(depo2.sigma), np.mean(hex.Rfo))
+            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(hex.Rfo))
 
     # Parallel flow: 0
     if f_type == 0:
@@ -106,8 +114,8 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 
                 if k in ks:
                     export_DayVars(f_type, dpath, k, Q,
-                                   T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx * dx,
-                                   T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2
+                                   T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx,
+                                   T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2dx
                                    )
                 break
         
@@ -158,7 +166,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 
                 if k in ks:
                     export_DayVars(f_type, dpath, k, Q,
-                                   T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx * dx,
-                                   T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2
+                                   T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx,
+                                   T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2dx
                                    )
                 break

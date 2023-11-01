@@ -39,8 +39,8 @@ export daily data vs. HEX distance
 '''
 def export_DayVars(
     f_type, dpath, k, Q, 
-    F1T, F1Re, F1h, F1R, Rf1, Sigma1, dP1, 
-    F2T, F2Re, F2h, F2R, Rf2, Sigma2, dP2
+    F1T, F1Re, F1h, F1R, Rf1, Sigma1, dP1dx, 
+    F2T, F2Re, F2h, F2R, Rf2, Sigma2, dP2dx
 ):
     df_day = pd.DataFrame()
     df_day["Q"] = Q
@@ -50,17 +50,16 @@ def export_DayVars(
     df_day["F1R"] = F1R
     df_day["Rf1"] = Rf1
     df_day["Sigma1"] = Sigma1
-    df_day["dP1"] = dP1
+    df_day["dP1/dx"] = dP1dx
     df_day["F2T"] = F2T
     df_day["F2Re"] = F2Re
     df_day["F2h"] = F2h
     df_day["F2R"] = F2R
     df_day["Rf2"] = Rf2
     df_day["Sigma2"] = Sigma2
-    df_day["dP2"] = dP2
+    df_day["dP2/dx"] = dP2dx
     
     if f_type == 0:
         df_day.to_csv(f"{dpath}/parallel_day_{k}.csv", index=False)
     elif f_type == 1:
         df_day.to_csv(f"{dpath}/counter_day_{k}.csv", index=False)  
-
