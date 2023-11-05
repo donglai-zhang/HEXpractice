@@ -37,6 +37,7 @@ def Simulation(dfs, day, dgen, f_type, hex,
     Q = F * U * A * dTlm
     here we set correlation factor F = 0.993
     '''
+    F = 0.993
     def Solve_outlets(sol):
         if f_type == 0:
             dT1 = t2i - t1i
@@ -47,7 +48,7 @@ def Simulation(dfs, day, dgen, f_type, hex,
         dTlm = (dT1 - dT2) / np.log(dT1 / dT2)
 
         Q = m1i * fluid1.Cp * (sol[0] - t1i)
-        return [Q - m2i * fluid2.Cp * (t2i - sol[1]),  Q - 0.993 * UA * dTlm]
+        return [Q - m2i * fluid2.Cp * (t2i - sol[1]),  Q - F * UA * dTlm]
     
     # sol = fsolve(Solve_outlets, [t1i + 5, t2i - 5])
     # guess starting with the true values, but it DO NOT hanppen in the real world
@@ -86,7 +87,7 @@ def main():
     f_type = 1
     d_path = Path("../../py_data/HEXPractice")
 
-    # mode: cinlet/rinlet: inlet
+    # mode: cinlet/rinlet: constant or random inlet
     mode = "cinlet"
     s_path = Path(f"{d_path}/lumpHEX/{mode}")
 
