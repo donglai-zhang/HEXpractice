@@ -47,9 +47,9 @@ def main():
     
     # data path
     if ran == 0:
-        dpath = Path("../../py_data/HEXPractice/cinlet")
+        dpath = Path("../../py_data/HEXPractice/disHEX/cinlet")
     elif ran == 1:
-        dpath = Path("../../py_data/HEXPractice/rinlet")
+        dpath = Path("../../py_data/HEXPractice/disHEX/rinlet")
     
     for k in range(1, days + 1):
         run_HEX(dfs, dpath, k, d_save,

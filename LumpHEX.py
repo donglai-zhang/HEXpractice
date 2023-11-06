@@ -35,9 +35,9 @@ def Simulation(dfs, day, dgen, f_type, hex,
     Function for solving outlets
     Q = m1 * cp1 * (t1o - t1i) = m2 * cp2 * (t2i - t2o)
     Q = F * U * A * dTlm
-    here we set correlation factor F = 0.993
+    For single path, correction factor F = 1
     '''
-    F = 0.993
+    F = 1
     def Solve_outlets(sol):
         if f_type == 0:
             dT1 = t2i - t1i
@@ -84,12 +84,12 @@ def main():
     depo2 = Fouling(pv="CF")
     
     # f_type: 0 - parallel, 1 - counter
-    f_type = 1
-    d_path = Path("../../py_data/HEXPractice")
+    f_type = 0
+    d_path = Path("../../py_data/HEXPractice/disHEX")
 
     # mode: cinlet/rinlet: constant or random inlet
-    mode = "cinlet"
-    s_path = Path(f"{d_path}/lumpHEX/{mode}")
+    mode = "rinlet"
+    s_path = Path(f"{d_path}/../lumpHEX/{mode}")
 
     if f_type == 0:
         dfs = pd.read_csv(f"{d_path}/{mode}/parallel.csv", header=0)

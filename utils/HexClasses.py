@@ -119,7 +119,7 @@ class Fluid:
     developed turbulent flow: Cf = (0.79 * log(Re) - 1.64) ^ -2
     '''
     def get_Fricion(self, Re):
-        return 64 / Re
+        return np.power(0.79 * np.log(Re) - 1.64, -2) 
     
     '''
     get shear stress

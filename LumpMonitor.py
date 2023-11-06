@@ -12,18 +12,21 @@ def main():
     # initialise fluids
     fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=573, k=0.12, mu=4e-6 * 900)
     fluid2 = Fluid(m=1, Cp=4180, rho=1000, Ti=800, k=0.7, mu=8.9e-4)
-    
-    # f_type: 0 - parallel, 1 - counter
+      
+    '''
+    f_type: 0 - parallel, 1 - counter
+     mode: cinlet/rinlet: constant or random inlet
+    '''
     f_type = 0
-    d_path = Path("../../py_data/HEXPractice")
-
-    # mode: cinlet/rinlet: constant or random inlet
     mode = "rinlet"
+    d_path = Path(f"../../py_data/HEXPractice/lumpHEX/{mode}")
+
+
 
     if f_type == 0:
-        dfs = pd.read_csv(f"{d_path}/{mode}/parallel.csv", header=0)
+        dfs = pd.read_csv(f"{d_path}/parallel.csv", header=0)
     elif f_type == 1:
-        dfs = pd.read_csv(f"{d_path}/{mode}/counter.csv", header=0)
+        dfs = pd.read_csv(f"{d_path}/counter.csv", header=0)
         
     T1i = dfs["F1i"]       # Fluid1 (cold) inlet temperature
     T1o = dfs["F1o"]       # Fluid1 (cold) outlet temperature
@@ -50,8 +53,8 @@ def main():
     # dTlm = (dT1 - dT2) / ln(dT1 / dT2)
     dTlm = (dT1 - dT2) / np.log(dT1 / dT2)
     
-    # UA = Q / (F * dTlm)
-    F = 0.993
+    # UA = Q / (F * dTlm), correction factor F=1
+    F = 1
     UA = Q / (F * dTlm)
     
     '''
@@ -69,7 +72,7 @@ def main():
         Vol1 = fluid1.m / fluid1.rho
         v1 = Vol1 / Ac1
         Re = fluid1.get_Re(v1, D1)
-        Cf = 64 / Re
+        Cf = fluid1.get_Fricion(Re)
         return Cf  / D1 * fluid1.rho * v1 ** 2 / 2  - dp1 / hex.dx
     
     guess_sigma = (0.001) * np.ones(len(dfs))
@@ -100,14 +103,16 @@ def main():
     fig.set_figheight(6)
     fig.set_figwidth(15)
     
-    ax[0].plot(sigma_sol, c="blue", label="Predicted fouling thickness")
-    ax[0].plot(dfs["Sigma1"], c="red", alpha=0.7, label="True fouling thickness")
+    x = dfs["Day"].to_numpy()
+        
+    ax[0].plot(x, sigma_sol, c="blue", label="Predicted fouling thickness")
+    ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
     ax[0].set_ylabel("Thickness (m)")
     ax[0].set_xlabel("Days")
     ax[0].legend()
     
-    ax[1].plot(k_sol[1: ], label="Predicted deposit conductivity")
-    ax[1].plot(0.2 * np.ones(len(dfs) - 1), label="True deposit conductivity$")
+    ax[1].plot(x[1:], k_sol[1:].to_numpy(), label="Predicted deposit conductivity")
+    ax[1].plot(x[1:], 0.2 * np.ones(len(dfs) - 1), label="True deposit conductivity$")
     ax[1].set_ylabel("Conductivity (W/m*k)")
     ax[1].set_xlabel("Days")
     ax[1].legend()

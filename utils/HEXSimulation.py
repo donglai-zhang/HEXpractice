@@ -62,7 +62,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     dT1dt = np.zeros(n)
     dT2dt = np.zeros(n)
 
-    dfs.append_Vars(k, np.mean(UA), 
+    dfs.append_Vars(k, np.sum(UA), 
             T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(hex.Rfi),
             T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(hex.Rfo))
 
