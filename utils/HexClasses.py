@@ -151,11 +151,13 @@ class Fluid:
 class Fouling:
     def __init__(self,
                  simga = 0,           # m, fouling layer
+                 Rf = 0,              # K/W, fouling resistance
                  k_l0 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
                  pv = "CF"            # parameter version
                  ):
         # self.dSigmas = []           # array recording dsigma/dt
         self.sigma = simga
+        self.Rf = Rf
         self.k_l0 = k_l0             
 
         '''Constants'''
@@ -184,7 +186,7 @@ class Fouling:
     def THfouling(self, Re, Pr, Tf, tau, k_L0 = 0.2):
         dRfdt = self.alpha * np.power(Re, -0.66) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
         dSigmadt = k_L0 * dRfdt
-        return dSigmadt
+        return dRfdt, dSigmadt
     
     '''
     start to simulate fouling
@@ -194,6 +196,7 @@ class Fouling:
     period: simulation period
     '''
     def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, period):
-        dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
+        dRft, dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
         # self.dSigmas.append(dSigmadt)
         self.sigma += dSigmadt * period
+        self.Rf += dRft * period

@@ -32,10 +32,10 @@ def main():
     fluid2 = Fluid(m=1, Cp=4180, rho=1000, Ti=800, k=0.7, mu=8.9e-4)
     
     # start simulation
-    f_type = 1       # flow type: 0 - parallel, 1 - counter
+    f_type = 0       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
-    ran = 1          # 1 - random inlet temperatures and flow rates
+    ran = 0          # 1 - random inlet temperatures and flow rates
     T1min = 563      # if ran == 1, minimum temperature of fluid 1 
     T2min = 790
     T1diff = 20      # if ran == 1, maximum temperature difference of fluid 1 
