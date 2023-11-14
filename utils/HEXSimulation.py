@@ -1,5 +1,5 @@
 import numpy as np
-from utils.utils import get_Tf, get_Q, gen_Inlets, export_DayVars
+from utils.utils import get_Tf, get_Q, gen_Uniform, gen_Normal, gen_RanInlets, export_DayVars
 import matplotlib.pyplot as plt
 
 '''
@@ -23,24 +23,24 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
             depo2,      # deposit layer 2 class
             lplt,       # time lag of monitoring plot
             ran,        # 1 - generate inlet temperatures and mass flows randomly
-            T1min,      # if ran == 1, minimum temperature of fluid 1 
-            T2min,      # if ran == 1, minimum temperature of fluid 2
-            T1diff,     # if ran == 1, maximum temperature difference of fluid 1 
-            T2diff,     # if ran == 1, maximum temperature difference of fluid 2
-            m1min,      # if ran == 1, minimum mass flow, etc.
-            m2min,
-            m1diff,
-            m2diff
+            T1mean,     # if ran == 1, mean temperature of fluid 1 
+            T2mean,     # if ran == 1, mean temperature of fluid 2
+            Tdiff,      # if ran == 1, maximum temperature difference of fluid 1 
+            m1mean,     # if ran == 1, mean mass flow, etc.
+            m2mean,
+            mdiff,
+            ran_mode    # random mode
             ):
     
-    T1i, m1 = fluid1.Ti, fluid1.m
-    T2i, m2 = fluid2.Ti, fluid2.m
     # randomly generate fluid properties
     if ran == 1:
-        T1i, m1 = gen_Inlets(Tmin=T1min, Tdiff=T1diff, mmin=m1min, mdiff=m1diff)
-        T2i, m2 = gen_Inlets(Tmin=T2min, Tdiff=T2diff, mmin=m2min, mdiff=m2diff)
-        fluid1.get_Inlets(T1i, m1)
-        fluid2.get_Inlets(T2i, m2)
+        if ran_mode == "uniform":
+            gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, gen_Uniform)
+        if ran_mode == "norm":
+            gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, gen_Normal)
+        
+    T1i, m1 = fluid1.Ti, fluid1.m
+    T2i, m2 = fluid2.Ti, fluid2.m
     
     Ac1 = hex.Ac1 * np.ones(n)
     Ac2 = hex.Ac2 * np.ones(n)

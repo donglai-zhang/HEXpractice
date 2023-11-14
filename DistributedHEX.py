@@ -6,7 +6,6 @@ from utils.HEXSimulation import run_HEX
 
 def main():
     dfs = dfg.GenDataframe()
-    
     # time setting
     t_final = 1e4   # s, maximum simulation time
     lplt = 60       # s, monitoring plot lag
@@ -35,28 +34,33 @@ def main():
     f_type = 0       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
-    ran = 0          # 1 - random inlet temperatures and flow rates
-    T1min = 563      # if ran == 1, minimum temperature of fluid 1 
-    T2min = 790
-    T1diff = 20      # if ran == 1, maximum temperature difference of fluid 1 
-    T2diff = 20
-    m1min = 0.25     # etc.
-    m2min = 0.9
-    m1diff = 0.1
-    m2diff = 0.2
+    ran = 1          # 1 - random inlet temperatures and flow rates
+    
+    # random variables
+    T1mean = fluid1.Ti      # if ran == 1, mean temperature of fluid 1 
+    T2mean = fluid2.Ti
+    m1mean = fluid1.m       # etc.
+    m2mean = fluid2.m
+    ran_mode = "norm"       # random mode, "norm" or "uniform"
+    Ti_diff = 0.1
+    m_diff = 0.3
     
     # data path
     if ran == 0:
         dpath = Path("../../py_data/HEXPractice/disHEX/cinlet")
+        for k in range(1, days + 1):
+            run_HEX(dfs, dpath, k, d_save,
+                hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
+                ran, 0, 0, 0, 0, 0, 0, None)
+        dfs.export_Vars(f_type, dpath)
+        
     elif ran == 1:
         dpath = Path("../../py_data/HEXPractice/disHEX/rinlet")
-    
-    for k in range(1, days + 1):
-        run_HEX(dfs, dpath, k, d_save,
+        for k in range(1, days + 1):
+            run_HEX(dfs, dpath, k, d_save,
                 hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
-                ran, T1min, T2min, T1diff, T2diff, m1min, m2min, m1diff, m2diff)
-        
-    dfs.export_Vars(f_type, dpath)
+                ran, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, ran_mode)
+        dfs.export_Vars(f_type, dpath)
     
 if __name__ == '__main__':
     main()

@@ -28,11 +28,32 @@ def get_Q(UA, T1, T2):
 '''
 generate random inlet parameters
 '''
-def gen_Inlets(Tmin, Tdiff, mmin, mdiff):
-    Ti = Tmin + Tdiff * np.random.rand()
-    m = mmin + mdiff * np.random.rand()
+def gen_Uniform(Tmean, mmean, Tdiff, mdiff):
+    Ti = Tmean * np.random.uniform(1 - Tdiff, 1 + Tdiff)
+    m = mmean * np.random.uniform(1 - mdiff, 1 + mdiff)
+    
+    return Ti, m
+
+def gen_Normal(Tmean, mmean, Tdiff, mdiff):
+    Ti = np.random.normal(Tmean, Tmean * Tdiff)
+    m = np.random.normal(mmean, mmean * mdiff )
 
     return Ti, m
+
+def gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, func):
+    en = m1mean * fluid1.Cp * T1mean  + m2mean * fluid2.Cp * T2mean
+    en_diff = en * Tdiff
+    
+    while (True):
+        T1i, m1 = func(T1mean, m1mean, Tdiff, mdiff)
+        T2i, m2 = func(T2mean, m2mean, Tdiff, mdiff)
+        en_new = m1 * fluid1.Cp * T1i + m2 * fluid2.Cp * T2i
+        
+        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and np.abs(en - en_new) < en_diff:
+            break
+    
+    fluid1.get_Inlets(T1i, m1)
+    fluid2.get_Inlets(T2i, m2)
 
 '''
 export daily data vs. HEX distance
