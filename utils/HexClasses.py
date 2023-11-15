@@ -25,7 +25,7 @@ class HEX:
         self.rfo = self.ro      # outer radius beyond fouling layer
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.get_Rf(self.ri, self.rfi, 0.2)
+        self.Rfi = self.get_Rf(self.rfi, self.ri, 0.2)
         self.Rfo = self.get_Rf(self.ro, self.rfo, 0.2)
 
     def inner_Cross(self, rfi):
@@ -36,13 +36,11 @@ class HEX:
 
     def outer_Cross(self, rfo):
         Ac2 = np.pi * (self.R ** 2 - rfo ** 2)        # m^2, cross-sectional area of outer annulus
-        D2 = 4 * Ac2 / (2 * np.pi * (self.R + rfo))      # m, charateristic length of shell
+        D2 = 2 * (self.R - self.rfo)    # m, charateristic length of shell
         As2 = 2 * np.pi * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
     
-    def get_Rf(self, ri, Rfr, k):
-        r_max = np.maximum(ri, Rfr)
-        r_min = np.minimum(ri, Rfr)
+    def get_Rf(self, r_min, r_max, k):
         return np.log(r_max / r_min) / (2 * np.pi * k * self.dx)          # K/W, inner/outer deposit fouling resistance
 
     '''
@@ -55,7 +53,7 @@ class HEX:
         self.rfo = self.ro + sigma2
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.get_Rf(self.ri, self.rfi, k1)
+        self.Rfi = self.get_Rf(self.rfi, self.ri, k1)
         self.Rfo = self.get_Rf(self.ro, self.rfo, k2)
 
 class Fluid:
@@ -64,7 +62,7 @@ class Fluid:
                  Cp = 4180,    # J/kg*K, heat capacity of fluid1 (cold), default water
                  rho = 1000,   # kg/m^3, density of fluid, default water
                  Ti = 373,     # K, fluid inlet temperature, default water
-                 k = 0.7,      # W/(m*K), fluid thermal conductivity, default water
+                 k = 0.6,      # W/(m*K), fluid thermal conductivity, default water
                  mu = 8.9e-4   # Pa*s, dynamic viscocity
                 ):
         self.m = m
@@ -116,10 +114,9 @@ class Fluid:
     '''
     get friction factor
     developed laminar flow: Cf = 64 / Re
-    developed turbulent flow: Cf = (0.79 * log(Re) - 1.64) ^ -2
     '''
     def get_Fricion(self, Re):
-        return np.power(0.79 * np.log(Re) - 1.64, -2) 
+        return 0.0035 + 0.264 * np.power(Re, -0.42)
     
     '''
     get shear stress
@@ -153,26 +150,17 @@ class Fouling:
                  simga = 0,           # m, fouling layer
                  Rf = 0,              # K/W, fouling resistance
                  k_l0 = 0.2,          # W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
-                 pv = "CF"            # parameter version
+                 pv = "EP"            # parameter version
                  ):
         # self.dSigmas = []           # array recording dsigma/dt
         self.sigma = simga
         self.Rf = Rf
-        self.k_l0 = k_l0             
+        self.k_l0 = k_l0   
+        self.pv = pv       
 
         '''Constants'''
         self.Rg = 8.3145            # J/K*mol, gas constant
-        
-        if  pv == "EDB":
-            # EDB version
-            self.alpha = 0.54           # K*m^2/W*s, constant deposit coefficient
-            self.gamma = 3.45e-9        # m^4*N*k/J, constant supression coefficient
-            self.Ef = 28000             # J/mol, constant activation energy
-        elif pv == "CF":
-            # CF version
-            self.alpha = 0.0139
-            self.gamma = 4.03e-11
-            self.Ef = 48000
+
 
     ''' 
     get threshold fouling rate and thickness
@@ -184,7 +172,14 @@ class Fouling:
     k_L0: W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
     '''
     def THfouling(self, Re, Pr, Tf, tau, k_L0 = 0.2):
-        dRfdt = self.alpha * np.power(Re, -0.66) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
+        if self.pv == "EP":
+            # CF version
+            self.alpha = 0.0139
+            self.beta = -0.66
+            self.gamma = 4.03e-11
+            self.Ef = 48000
+            dRfdt = self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
+ 
         dSigmadt = k_L0 * dRfdt
         return dRfdt, dSigmadt
     

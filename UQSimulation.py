@@ -13,19 +13,20 @@ def main():
     '''
     uncertainty qualification variables
     '''
-    T1mean = 573            # if ran == 1, mean temperature of fluid 1 
-    T2mean = 800
+    T1mean = 473            # if ran == 1, mean temperature of fluid 1 
+    T2mean = 603
     m1mean = 0.3            # etc.
-    m2mean = 1
+    m2mean = 0.5
     ran_mode = "norm"       # random sampling mode, "norm" or "uniform"
     uq_modes = ["L", "M", "H"]
     m_diffs = [0.1, 0.3, 0.5]       # differences of random data
-    Ti_diffs = [0.1, 0.2, 0.3]
+    Ti_diffs = [0.05, 0.1, 0.15]
+    en_diffs = [0.1, 0.2, 0.3]
     
     '''
     start simulation
     '''
-    f_type = 1       # flow type: 0 - parallel, 1 - counter
+    f_type = 0       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
 
@@ -33,7 +34,7 @@ def main():
     constant mass flow mode: "M"
     '''
     m_diff = m_diffs[1]
-    for uq_mode, Ti_diff in zip(uq_modes, Ti_diffs):
+    for uq_mode, Ti_diff, en_diff in zip(uq_modes, Ti_diffs, en_diffs):
         dfs = dfg.GenDataframe()
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'mM' + 'Ti' + uq_mode}")
         
@@ -45,8 +46,8 @@ def main():
         x = np.linspace(dx / 2, hex.L - dx / 2, n)
 
         #initialise fouling layers
-        depo1 = Fouling(pv="CF")
-        depo2 = Fouling(pv="CF")
+        depo1 = Fouling(pv="EP")
+        depo2 = Fouling(pv="EP")
         
         # initialise fluids
         fluid1 = Fluid(m=m1mean, Cp=1900, rho=900, Ti=T1mean, k=0.12, mu=4e-6 * 900)
@@ -55,7 +56,7 @@ def main():
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
                     hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
-                    1, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, ran_mode)
+                    1, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, en_diff, ran_mode)
         
         dfs.export_Vars(f_type, dpath)
         
@@ -63,7 +64,7 @@ def main():
     constant inlet temperature mode: "M"
     '''
     Ti_diff = Ti_diffs[1]
-    for uq_mode, m_diff in zip(uq_modes, m_diffs):
+    for uq_mode, m_diff, en_diff in zip(uq_modes, m_diffs, en_diffs):
         dfs = dfg.GenDataframe()
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'m' + uq_mode + 'TiM'}")
         
@@ -75,8 +76,8 @@ def main():
         x = np.linspace(dx / 2, hex.L - dx / 2, n)
 
         #initialise fouling layers
-        depo1 = Fouling(pv="CF")
-        depo2 = Fouling(pv="CF")
+        depo1 = Fouling(pv="EP")
+        depo2 = Fouling(pv="EP")
         
         # initialise fluids
         fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=573, k=0.12, mu=4e-6 * 900)
@@ -85,7 +86,7 @@ def main():
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
                     hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
-                    1, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, ran_mode)
+                    1, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, en_diff, ran_mode)
         
         dfs.export_Vars(f_type, dpath)
     
