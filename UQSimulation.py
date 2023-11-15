@@ -69,7 +69,7 @@ def main():
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'m' + uq_mode + 'TiM'}")
         
         # initialise HEX
-        hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=30e-3)
+        hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3)
         n = hex.n
         dx = hex.dx
         T0 = hex.T0
@@ -80,8 +80,8 @@ def main():
         depo2 = Fouling(pv="EP")
         
         # initialise fluids
-        fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=573, k=0.12, mu=4e-6 * 900)
-        fluid2 = Fluid(m=1, Cp=4180, rho=1000, Ti=1000, k=0.7, mu=8.9e-4)
+        fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+        fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.7, mu=8.9e-4)
         
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
