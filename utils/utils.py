@@ -11,6 +11,8 @@ R1/R2: # K/W, convective thermal resistance
 def get_Tf(Q, T1, T2, R1, R2):
     Ts1 = Q * R1 + T1         # K, surface temperature
     Ts2 = T2 - Q * R2
+    # Tf1 = (T1 + Ts1) / 2
+    # Tf2 = (T2 + Ts2) / 2
     Tf1 = T1 + 0.55 * (Ts1 - T1)
     Tf2 = Ts2 + 0.55 * (T2 - Ts2)
     return Tf1, Tf2 
@@ -40,16 +42,19 @@ def gen_Normal(Tmean, mmean, Tdiff, mdiff):
 
     return Ti, m
 
-def gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, func):
-    en = m1mean * fluid1.Cp * T1mean  + m2mean * fluid2.Cp * T2mean
-    en_diff = en * Tdiff
+def gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, endiff, func):
+    en1 = m1mean * T1mean
+    en2 = m2mean * T2mean
+    en_diff1 = en1 * endiff
+    en_diff2 = en1 * endiff
     
     while (True):
         T1i, m1 = func(T1mean, m1mean, Tdiff, mdiff)
         T2i, m2 = func(T2mean, m2mean, Tdiff, mdiff)
-        en_new = m1 * fluid1.Cp * T1i + m2 * fluid2.Cp * T2i
+        en1_new = m1 * T1i 
+        en2_new = m2 * T2i
         
-        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and np.abs(en - en_new) < en_diff:
+        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and np.abs(en1 - en1_new) < en_diff1 and np.abs(en2 - en2_new) < en_diff2:
             break
     
     fluid1.get_Inlets(T1i, m1)

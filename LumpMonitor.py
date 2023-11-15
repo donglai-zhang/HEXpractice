@@ -7,11 +7,11 @@ from pathlib import Path
 
 def main():
     # initialise HEX
-    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=30e-3, n=1)
+    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3, n=1)
 
     # initialise fluids
-    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=573, k=0.12, mu=4e-6 * 900)
-    fluid2 = Fluid(m=1, Cp=4180, rho=1000, Ti=800, k=0.7, mu=8.9e-4)
+    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+    fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
       
     '''
     f_type: 0 - parallel, 1 - counter

@@ -13,7 +13,7 @@ def main():
     
 
     # initialise HEX
-    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=30e-3)
+    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3)
     n = hex.n
     dx = hex.dx
     T0 = hex.T0
@@ -23,15 +23,15 @@ def main():
     initialise fouling layers
     pv : CF or EDB(in error), parameters version of threshold fouling model
     '''
-    depo1 = Fouling(pv="CF")
-    depo2 = Fouling(pv="CF")
+    depo1 = Fouling(pv="EP")
+    depo2 = Fouling(pv="EP")
     
     # initialise fluids
-    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=573, k=0.12, mu=4e-6 * 900)
-    fluid2 = Fluid(m=1, Cp=4180, rho=1000, Ti=800, k=0.7, mu=8.9e-4)
+    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+    fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
     
     # start simulation
-    f_type = 0       # flow type: 0 - parallel, 1 - counter
+    f_type = 1       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
     ran = 1          # 1 - random inlet temperatures and flow rates
@@ -44,6 +44,7 @@ def main():
     ran_mode = "norm"       # random mode, "norm" or "uniform"
     Ti_diff = 0.1
     m_diff = 0.3
+    en_diff = 0.2
     
     # data path
     if ran == 0:
@@ -51,7 +52,7 @@ def main():
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
                 hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
-                ran, 0, 0, 0, 0, 0, 0, None)
+                ran, 0, 0, 0, 0, 0, 0, 0, None)
         dfs.export_Vars(f_type, dpath)
         
     elif ran == 1:
@@ -59,7 +60,7 @@ def main():
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
                 hex, n, dx, T0, x, f_type, t_final, eps, fluid1, fluid2, depo1, depo2, lplt, 
-                ran, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, ran_mode)
+                ran, T1mean, T2mean, Ti_diff, m1mean, m2mean, m_diff, en_diff, ran_mode)
         dfs.export_Vars(f_type, dpath)
     
 if __name__ == '__main__':
