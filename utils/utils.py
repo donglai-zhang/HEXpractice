@@ -25,7 +25,7 @@ T1/T2: K, cold/hold temeratures
 Cp: heat 
 '''
 def get_Q(UA, T1, T2):
-    return UA * np.abs(T2 - T1)
+    return UA * (T2 - T1)
 
 '''
 generate random inlet parameters

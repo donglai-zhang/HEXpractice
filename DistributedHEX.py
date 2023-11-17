@@ -13,7 +13,7 @@ def main():
     
 
     # initialise HEX
-    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3)
+    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
     n = hex.n
     dx = hex.dx
     T0 = hex.T0
@@ -23,15 +23,15 @@ def main():
     initialise fouling layers
     pv : CF or EDB(in error), parameters version of threshold fouling model
     '''
-    depo1 = Fouling(pv="EP")
-    depo2 = Fouling(pv="EP")
+    depo1 = Fouling(pv="Yeap")
+    depo2 = Fouling(pv="Yeap")
     
     # initialise fluids
-    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+    fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
     fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
     
     # start simulation
-    f_type = 1       # flow type: 0 - parallel, 1 - counter
+    f_type = 0       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
     ran = 1          # 1 - random inlet temperatures and flow rates

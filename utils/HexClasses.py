@@ -25,8 +25,6 @@ class HEX:
         self.rfo = self.ro      # outer radius beyond fouling layer
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.get_Rf(self.rfi, self.ri, 0.2)
-        self.Rfo = self.get_Rf(self.ro, self.rfo, 0.2)
 
     def inner_Cross(self, rfi):
         Ac1 = np.pi * rfi ** 2        # m^2, cross-sectional area of inner pipe
@@ -39,9 +37,6 @@ class HEX:
         D2 = 2 * (self.R - self.rfo)    # m, charateristic length of shell
         As2 = 2 * np.pi * rfo * self.dx         # m^2, outer pipe surface area of each node
         return Ac2, D2, As2
-    
-    def get_Rf(self, r_min, r_max, k):
-        return np.log(r_max / r_min) / (2 * np.pi * k * self.dx)          # K/W, inner/outer deposit fouling resistance
 
     '''
     update parameters dependent on the fouling thickness
@@ -53,8 +48,6 @@ class HEX:
         self.rfo = self.ro + sigma2
         self.Ac1, self.D1, self.As1 = self.inner_Cross(self.rfi)
         self.Ac2, self.D2, self.As2 = self.outer_Cross(self.rfo)
-        self.Rfi = self.get_Rf(self.rfi, self.ri, k1)
-        self.Rfo = self.get_Rf(self.ro, self.rfo, k2)
 
 class Fluid:
     def __init__(self, 
@@ -116,7 +109,7 @@ class Fluid:
     developed laminar flow: Cf = 64 / Re
     '''
     def get_Fricion(self, Re):
-        return 0.0035 + 0.264 * np.power(Re, -0.42)
+        return 0.0036 + 0.264 * np.power(Re, -0.42)
     
     '''
     get shear stress
@@ -161,25 +154,30 @@ class Fouling:
         '''Constants'''
         self.Rg = 8.3145            # J/K*mol, gas constant
 
-
     ''' 
     get threshold fouling rate and thickness
     inputs:
     Re: Reynolds number
     Pr: Prandtl number
     Tf: K, film temperature
-    tau: Pa, shear stress
-    k_L0: W/(m*K), material thermal conductivity of a freshly deposited material (lower limit)
+    tau: Pa, shear stressdepo
+    k_L0: W/(m*K), material thermal conductivity of a freshly sited material (lower limit)
     '''
     def THfouling(self, Re, Pr, Tf, tau, k_L0 = 0.2):
         if self.pv == "EP":
-            # CF version
+            # EP version
             self.alpha = 0.0139
             self.beta = -0.66
             self.gamma = 4.03e-11
             self.Ef = 48000
-            dRfdt = self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
- 
+        if self.pv == "Yeap":
+            # EP version
+            self.alpha = 0.0011
+            self.beta = -0.66
+            self.gamma = 7.3e-12
+            self.Ef = 28000
+        
+        dRfdt = self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
         dSigmadt = k_L0 * dRfdt
         return dRfdt, dSigmadt
     
@@ -195,3 +193,6 @@ class Fouling:
         # self.dSigmas.append(dSigmadt)
         self.sigma += dSigmadt * period
         self.Rf += dRft * period
+        
+        if np.mean(self.sigma) < 0:
+            self.sigma = 0

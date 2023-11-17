@@ -47,14 +47,13 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     Ac2 = hex.Ac2 * np.ones(n)
     fluid1.get_Prams(Ac1, hex.D1, hex.As1)
     fluid2.get_Prams(Ac2, hex.D2, hex.As2)
-    UA = 1 / (fluid1.R + hex.Rfi + hex.dRwall + hex.Rfo + fluid2.R)     # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
-    # UA = 1 / (fluid1.R + depo1.Rf + hex.dRwall + depo2.Rf + fluid2.R)
+    UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)     # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
     
     # pressure drops
     dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
     dP2dx = fluid2.get_PressureDrop(fluid2.Cf, hex.D2, fluid2.v)
     
-    dt = 0.5 / np.max(fluid1.v + fluid2.v) * dx      # max courant numebr = 0.5
+    dt = 1 / np.max(fluid1.v + fluid2.v) * dx      # max courant numebr = 0.5
     t = np.arange(0, t_final, dt)
     print("Day", k, ", dt = ", np.round(dt, 5))
     
@@ -63,14 +62,10 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     T2 = T1.copy()
     dT1dt = np.zeros(n)
     dT2dt = np.zeros(n)
-
+    
     dfs.append_Vars(k, np.sum(UA), 
-            T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(hex.Rfi),
-            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(hex.Rfo))
-    # dfs.append_Vars(k, np.sum(UA), 
-    #         T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
-    #         T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(depo2.Rf))
-
+            T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
+            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(depo2.Rf))
 
     # Parallel flow: 0
     if f_type == 0:
@@ -119,11 +114,6 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 dfs.append_Outlets(T1[-1], T2[-1], np.sum(Q))
                 
                 if k in ks:
-                    # export_DayVars(f_type, dpath, k, Q,
-                    #                T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx,
-                    #                T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2dx
-                    #                )
-                    
                     export_DayVars(f_type, dpath, k, Q,
                                     T1, fluid1.Re, fluid1.h, fluid1.R, depo1.Rf, depo1.sigma, dP1dx,
                                     T2, fluid2.Re, fluid2.h, fluid2.R, depo2.Rf, depo2.sigma, dP2dx
@@ -177,11 +167,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 
                 if k in ks:
                     export_DayVars(f_type, dpath, k, Q,
-                                   T1, fluid1.Re, fluid1.h, fluid1.R, hex.Rfi, depo1.sigma, dP1dx,
-                                   T2, fluid2.Re, fluid2.h, fluid2.R, hex.Rfo, depo2.sigma, dP2dx
-                                   )
-                    # export_DayVars(f_type, dpath, k, Q,
-                    #                 T1, fluid1.Re, fluid1.h, fluid1.R, depo1.Rf, depo1.sigma, dP1dx,
-                    #                 T2, fluid2.Re, fluid2.h, fluid2.R, depo2.Rf, depo2.sigma, dP2dx
-                    #                 )
+                                    T1, fluid1.Re, fluid1.h, fluid1.R, depo1.Rf, depo1.sigma, dP1dx,
+                                    T2, fluid2.Re, fluid2.h, fluid2.R, depo2.Rf, depo2.sigma, dP2dx
+                                    )
                 break

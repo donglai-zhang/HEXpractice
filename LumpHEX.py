@@ -20,16 +20,15 @@ def Simulation(dfs, day, dgen, f_type, hex,
 
     fluid1.get_Prams(hex.Ac1, hex.D1, hex.As1)
     fluid2.get_Prams(hex.Ac2, hex.D2, hex.As2)
-    UA = 1 / (fluid1.R + hex.Rfi + hex.dRwall + hex.Rfo + fluid2.R)       # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
-    
+    UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)   # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
     
     # pressure drops
     dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
     dP2dx = fluid2.get_PressureDrop(fluid2.Cf, hex.D2, fluid2.v)
     
     dgen.append_Vars(day + 1, np.mean(UA), 
-        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.R, fluid1.Cf, fluid1.tau, dP1dx * hex.dx, depo1.sigma, hex.Rfi,
-        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.R, fluid2.Cf, fluid2.tau, dP2dx * hex.dx, depo2.sigma, hex.Rfo)
+        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.R, fluid1.Cf, fluid1.tau, dP1dx * hex.dx, depo1.sigma, depo1.Rf,
+        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.R, fluid2.Cf, fluid2.tau, dP2dx * hex.dx, depo2.sigma, depo2.Rf)
 
     '''
     Function for solving outlets
@@ -73,18 +72,18 @@ def main():
     Load data, suppose we only have monitoring data of inlet temeratures and mass rates
     '''
     # initialise HEX
-    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3, n=1)
+    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3, n=1)
 
     # initialise fluids
-    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+    fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
     fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
 
     # initialise fouling layers
-    depo1 = Fouling(pv="EP")
-    depo2 = Fouling(pv="EP")
+    depo1 = Fouling(pv="Yeap")
+    depo2 = Fouling(pv="Yeap")
     
     # f_type: 0 - parallel, 1 - counter
-    f_type = 1
+    f_type = 0
     d_path = Path("../../py_data/HEXPractice/disHEX")
 
     # mode: cinlet/rinlet: constant or random inlet
