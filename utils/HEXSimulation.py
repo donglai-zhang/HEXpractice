@@ -47,7 +47,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     Ac2 = hex.Ac2 * np.ones(n)
     fluid1.get_Prams(Ac1, hex.D1, hex.As1)
     fluid2.get_Prams(Ac2, hex.D2, hex.As2)
-    UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)     # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
+    UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)     # W/K Overall heat transfer coefficient times surface area (1 / Total Resistance)
     
     # pressure drops
     dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
@@ -64,8 +64,8 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
     dT2dt = np.zeros(n)
     
     dfs.append_Vars(k, np.sum(UA), 
-            T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.R), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
-            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.R), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(depo2.Rf))
+            T1i, m1, np.mean(fluid1.v), np.mean(hex.D1), np.mean(fluid1.Re), np.mean(fluid1.Nu), np.mean(fluid1.h), np.mean(fluid1.Cf), np.mean(fluid1.tau), np.sum(dP1dx * dx), np.mean(depo1.sigma), np.mean(depo1.Rf),
+            T2i, m2, np.mean(fluid2.v), np.mean(hex.D2), np.mean(fluid2.Re), np.mean(fluid2.Nu), np.mean(fluid2.h), np.mean(fluid2.Cf), np.mean(fluid2.tau), np.sum(dP2dx * dx), np.mean(depo2.sigma), np.mean(depo2.Rf))
 
     # Parallel flow: 0
     if f_type == 0:
@@ -104,7 +104,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 Tf1, Tf2 = get_Tf(Q, T1, T2, fluid1.R, fluid2.R)
 
                 # simulate fouling thickness for the next day
-                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, 24 * 3600)
+                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, hex.ri, 24 * 3600)
                 # depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, 24 * 3600)
 
                 # update HEX parameters
@@ -115,8 +115,8 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 
                 if k in ks:
                     export_DayVars(f_type, dpath, k, Q,
-                                    T1, fluid1.Re, fluid1.h, fluid1.R, depo1.Rf, depo1.sigma, dP1dx,
-                                    T2, fluid2.Re, fluid2.h, fluid2.R, depo2.Rf, depo2.sigma, dP2dx
+                                    T1, fluid1.Re, fluid1.Nu, fluid1.h, depo1.Rf, depo1.sigma, dP1dx,
+                                    T2, fluid2.Re, fluid2.Nu, fluid2.h, depo2.Rf, depo2.sigma, dP2dx
                                     )
                 break
         
@@ -156,7 +156,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 Tf1, Tf2 = get_Tf(Q, T1, T2, fluid1.R, fluid2.R)
 
                 # simulate fouling thickness for the next day
-                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, 24 * 3600)
+                depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, hex.ri, 24 * 3600)
                 # depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, 24 * 3600)
 
                 # update HEX parametersF
@@ -167,7 +167,7 @@ def run_HEX(dfs,        # dataframe for storing overall/average daily data
                 
                 if k in ks:
                     export_DayVars(f_type, dpath, k, Q,
-                                    T1, fluid1.Re, fluid1.h, fluid1.R, depo1.Rf, depo1.sigma, dP1dx,
-                                    T2, fluid2.Re, fluid2.h, fluid2.R, depo2.Rf, depo2.sigma, dP2dx
+                                    T1, fluid1.Re, fluid1.Nu, fluid1.h, depo1.Rf, depo1.sigma, dP1dx,
+                                    T2, fluid2.Re, fluid2.Nu, fluid2.h, depo2.Rf, depo2.sigma, dP2dx
                                     )
                 break

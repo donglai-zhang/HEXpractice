@@ -11,10 +11,10 @@ R1/R2: # K/W, convective thermal resistance
 def get_Tf(Q, T1, T2, R1, R2):
     Ts1 = Q * R1 + T1         # K, surface temperature
     Ts2 = T2 - Q * R2
-    # Tf1 = (T1 + Ts1) / 2
-    # Tf2 = (T2 + Ts2) / 2
-    Tf1 = T1 + 0.55 * (Ts1 - T1)
-    Tf2 = Ts2 + 0.55 * (T2 - Ts2)
+    Tf1 = (T1 + Ts1) / 2
+    Tf2 = (T2 + Ts2) / 2
+    # Tf1 = T1 + 0.55 * (Ts1 - T1)
+    # Tf2 = Ts2 + 0.55 * (T2 - Ts2)
     return Tf1, Tf2 
 
 '''
@@ -65,22 +65,22 @@ export daily data vs. HEX distance
 '''
 def export_DayVars(
     f_type, dpath, k, Q, 
-    F1T, F1Re, F1h, F1R, Rf1, Sigma1, dP1dx, 
-    F2T, F2Re, F2h, F2R, Rf2, Sigma2, dP2dx
+    F1T, F1Re, F1Nu, F1h, Rf1, Sigma1, dP1dx, 
+    F2T, F2Re, F2Nu, F2h, Rf2, Sigma2, dP2dx
 ):
     df_day = pd.DataFrame()
     df_day["Q"] = Q
     df_day["F1T"] = F1T
     df_day["F1Re"] = F1Re
+    df_day["F1Nu"] = F1Nu
     df_day["F1h"] = F1h
-    df_day["F1R"] = F1R
     df_day["Rf1"] = Rf1
     df_day["Sigma1"] = Sigma1
     df_day["dP1/dx"] = dP1dx
     df_day["F2T"] = F2T
     df_day["F2Re"] = F2Re
+    df_day["F2Nu"] = F2Nu
     df_day["F2h"] = F2h
-    df_day["F2R"] = F2R
     df_day["Rf2"] = Rf2
     df_day["Sigma2"] = Sigma2
     df_day["dP2/dx"] = dP2dx

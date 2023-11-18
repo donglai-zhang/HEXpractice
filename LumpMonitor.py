@@ -7,10 +7,10 @@ from pathlib import Path
 
 def main():
     # initialise HEX
-    hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3, n=1)
+    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3, n=1)
 
     # initialise fluids
-    fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
+    fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
     fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
       
     '''
@@ -20,8 +20,6 @@ def main():
     f_type = 0
     mode = "rinlet"
     d_path = Path(f"../../py_data/HEXPractice/lumpHEX/{mode}")
-
-
 
     if f_type == 0:
         dfs = pd.read_csv(f"{d_path}/parallel.csv", header=0)
@@ -75,7 +73,7 @@ def main():
         Cf = fluid1.get_Fricion(Re)
         return Cf  / D1 * fluid1.rho * v1 ** 2 / 2  - dp1 / hex.dx
     
-    guess_sigma = (0.001) * np.ones(len(dfs))
+    guess_sigma = (1e-5) * np.ones(len(dfs))
     sigma_sol = fsolve(solve_sigma, guess_sigma)
     
     # predict fouling layer conductivity
@@ -105,18 +103,19 @@ def main():
     
     x = dfs["Day"].to_numpy()
         
-    ax[0].plot(x, sigma_sol, c="blue", label="Predicted fouling thickness")
+    ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
     ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
     ax[0].set_ylabel("Thickness (m)")
     ax[0].set_xlabel("Days")
     ax[0].legend()
     
-    ax[1].plot(x[1:], k_sol[1:].to_numpy(), label="Predicted deposit conductivity")
-    ax[1].plot(x[1:], 0.2 * np.ones(len(dfs) - 1), label="True deposit conductivity$")
+    ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
+    ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
     ax[1].set_ylabel("Conductivity (W/m*k)")
     ax[1].set_xlabel("Days")
     ax[1].legend()
     
+    plt.ylim(0.18, 0.22)
     plt.show()
 
 if __name__ == '__main__':

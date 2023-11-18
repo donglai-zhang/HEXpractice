@@ -26,9 +26,9 @@ def Simulation(dfs, day, dgen, f_type, hex,
     dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
     dP2dx = fluid2.get_PressureDrop(fluid2.Cf, hex.D2, fluid2.v)
     
-    dgen.append_Vars(day + 1, np.mean(UA), 
-        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.R, fluid1.Cf, fluid1.tau, dP1dx * hex.dx, depo1.sigma, depo1.Rf,
-        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.R, fluid2.Cf, fluid2.tau, dP2dx * hex.dx, depo2.sigma, depo2.Rf)
+    dgen.append_Vars(day + 1, np.sum(UA), 
+        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.Cf, fluid1.tau, dP1dx * hex.dx, depo1.sigma, depo1.Rf,
+        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.Cf, fluid2.tau, dP2dx * hex.dx, depo2.sigma, depo2.Rf)
 
     '''
     Function for solving outlets
@@ -61,7 +61,7 @@ def Simulation(dfs, day, dgen, f_type, hex,
     dgen.append_Outlets(t1o, t2o, np.sum(Q))
 
     # simulate fouling thickness for the next day
-    depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, 24 * 3600)
+    depo1.FoulingSimu(fluid1.Re, fluid1.Pr, Tf1, fluid1.tau, depo1.k_l0, hex.ri, 24 * 3600)
     # depo2.FoulingSimu(fluid2.Re, fluid2.Pr, Tf2, fluid2.tau, depo2.k_l0, 24 * 3600)
 
     # update HEX parameters
@@ -83,7 +83,7 @@ def main():
     depo2 = Fouling(pv="Yeap")
     
     # f_type: 0 - parallel, 1 - counter
-    f_type = 0
+    f_type = 1
     d_path = Path("../../py_data/HEXPractice/disHEX")
 
     # mode: cinlet/rinlet: constant or random inlet

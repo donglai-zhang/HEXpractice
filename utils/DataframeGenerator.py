@@ -14,7 +14,6 @@ class GenDataframe:
         self.T1Re = []
         self.T1Nu = []
         self.T1h = []
-        self.T1R = []
         self.T1Cf = []
         self.T1Tau = []
         self.T1pd = []
@@ -28,7 +27,6 @@ class GenDataframe:
         self.T2Re = []
         self.T2Nu = []
         self.T2h = []
-        self.T2R = []
         self.T2Cf = []
         self.T2Tau = []
         self.T2pd = []
@@ -37,8 +35,8 @@ class GenDataframe:
         self.Q = []
     
     def append_Vars(self, day, uas, 
-                t1i, t1m, t1v, t1d, t1re, t1nu, t1h, t1r, t1cf, t1tau, t1pd, sigma1, rf1,
-                t2i, t2m, t2v, t2d, t2re, t2nu, t2h, t2r, t2cf, t2tau, t2pd, sigma2, rf2):
+                t1i, t1m, t1v, t1d, t1re, t1nu, t1h, t1cf, t1tau, t1pd, sigma1, rf1,
+                t2i, t2m, t2v, t2d, t2re, t2nu, t2h, t2cf, t2tau, t2pd, sigma2, rf2):
         self.Day.append(day)
         self.UAs.append(uas)
         self.T1in.append(t1i)
@@ -48,7 +46,6 @@ class GenDataframe:
         self.T1Re.append(t1re)
         self.T1Nu.append(t1nu)
         self.T1h.append(t1h)
-        self.T1R.append(t1r)
         self.T1Cf.append(t1cf)
         self.T1Tau.append(t1tau)
         self.T1pd.append(t1pd)
@@ -61,7 +58,6 @@ class GenDataframe:
         self.T2Re.append(t2re)
         self.T2Nu.append(t2nu)
         self.T2h.append(t2h)
-        self.T2R.append(t2r)
         self.T2Cf.append(t2cf)
         self.T2Tau.append(t2tau)
         self.T2pd.append(t2pd)
@@ -84,7 +80,6 @@ class GenDataframe:
         self.dfs["F1Re"] = self.T1Re
         self.dfs["F1Nu"] = self.T1Nu
         self.dfs["F1h"] = self.T1h
-        self.dfs["F1R"] = self.T1R
         self.dfs["F1Cf"] = self.T1Cf
         self.dfs["F1Tau"] = self.T1Tau
         self.dfs["dP1"] = self.T1pd
@@ -98,7 +93,6 @@ class GenDataframe:
         self.dfs["F2Re"] = self.T2Re
         self.dfs["F1Nu"] = self.T1Nu
         self.dfs["F2h"] = self.T2h
-        self.dfs["F2R"] = self.T2R
         self.dfs["F2Cf"] = self.T2Cf
         self.dfs["F2Tau"] = self.T2Tau
         self.dfs["dP2"] = self.T2pd

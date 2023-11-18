@@ -82,13 +82,13 @@ Metadata of dataframe
   -F1D: m, fluid 1 AVERAGE hydraulic diameter
   -F1Re: fluid 1 AVERAGE Reynolds number
   -F1Nu: fluid 1 Nusselt number
-  -F1h: W/m2*K, fluid 1 AVERAGE convective coefficient
+  -F1h: W/m^2*K, fluid 1 AVERAGE convective coefficient
   -F1R: K/W, fluid 1 AVERAGE convective resistance
   -F1Cf: fluid 1 friction factor
   -F1Tau: Pa, fluid 1 shear stress
   -dP1: Pa, tube side OVERALL pressure drop
   -Sigma1: tube side AVERAGE fouling thickness
-  -Rf1: K/W, tube side AVERAGE fouling resistance
+  -Rf1: m^2*K/W, tube side area fouling resistance
   -F2*: fluid 2 parameters, see above
-  -UA: W*m^2/n^2*k OVERALL heat transfer coefficient time surface area.
+  -UA: W/K OVERALL heat transfer coefficient time surface area (1/Rtotal).
   -Q: J/t, OVERALL heat duty

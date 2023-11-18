@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import fsolve
 
 class HEX:
     def __init__(self, 
@@ -127,7 +128,7 @@ class Fluid:
         self.Pr = self.get_Pr()
         self.Nu = self.get_Nu(self.Re, self.Pr)
         self.h = self.get_h(self.Nu, D)     # W/m^2*K, convective coefficient 
-        self.R = 1 / (As * self.h)      # K/W, convective thermal resistance
+        self.R = 1 / (self.h * As)          # K/W, thermal resistance
         self.Cf = self.get_Fricion(self.Re)
         self.tau = self.get_Shear(self.Cf, self.v)
     
@@ -177,9 +178,7 @@ class Fouling:
             self.gamma = 7.3e-12
             self.Ef = 28000
         
-        dRfdt = self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
-        dSigmadt = k_L0 * dRfdt
-        return dRfdt, dSigmadt
+        return self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
     
     '''
     start to simulate fouling
@@ -188,11 +187,20 @@ class Fouling:
     dt: time difference
     period: simulation period
     '''
-    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, period):
-        dRft, dSigmadt = self.THfouling(Re, Pr, Tf, tau, k_L0)
-        # self.dSigmas.append(dSigmadt)
-        self.sigma += dSigmadt * period
-        self.Rf += dRft * period
+    def FoulingSimu(self, Re, Pr, Tf, tau, k_L0, ri, period):
+        dRfdt = self.THfouling(Re, Pr, Tf, tau, k_L0)
+        self.Rf += dRfdt * period
         
+        def solve_sigma(sigma):
+            return np.log(ri / (ri - sigma)) - k_L0 * self.Rf / (ri - sigma)
+        
+        if type(dRfdt) == np.ndarray:
+            guess = 1e-5 * np.ones(len(dRfdt))
+            self.sigma = fsolve(solve_sigma, guess)
+        # for lumped
+        else:
+            guess = 1e-5
+            self.sigma = fsolve(solve_sigma, guess)[0]
+            
         if np.mean(self.sigma) < 0:
             self.sigma = 0
