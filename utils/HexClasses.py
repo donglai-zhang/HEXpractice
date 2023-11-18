@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 from scipy.optimize import fsolve
 
 class HEX:
@@ -192,7 +193,7 @@ class Fouling:
         self.Rf += dRfdt * period
         
         def solve_sigma(sigma):
-            return np.log(ri / (ri - sigma)) - k_L0 * self.Rf / (ri - sigma)
+            return ri / (ri - sigma) - np.exp(k_L0 * self.Rf / (ri - sigma))
         
         if type(dRfdt) == np.ndarray:
             guess = 1e-5 * np.ones(len(dRfdt))
@@ -201,6 +202,6 @@ class Fouling:
         else:
             guess = 1e-5
             self.sigma = fsolve(solve_sigma, guess)[0]
-            
+        
         if np.mean(self.sigma) < 0:
             self.sigma = 0

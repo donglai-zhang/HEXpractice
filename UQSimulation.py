@@ -13,7 +13,7 @@ def main():
     '''
     uncertainty qualification variables
     '''
-    T1mean = 473            # if ran == 1, mean temperature of fluid 1 
+    T1mean = 523            # if ran == 1, mean temperature of fluid 1 
     T2mean = 603
     m1mean = 0.3            # etc.
     m2mean = 0.5
@@ -26,7 +26,7 @@ def main():
     '''
     start simulation
     '''
-    f_type = 0       # flow type: 0 - parallel, 1 - counter
+    f_type = 1       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
 
@@ -39,19 +39,19 @@ def main():
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'mM' + 'Ti' + uq_mode}")
         
         # initialise HEX
-        hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=30e-3)
+        hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
         n = hex.n
         dx = hex.dx
         T0 = hex.T0
         x = np.linspace(dx / 2, hex.L - dx / 2, n)
 
         #initialise fouling layers
-        depo1 = Fouling(pv="EP")
-        depo2 = Fouling(pv="EP")
+        depo1 = Fouling(pv="Yeap")
+        depo2 = Fouling(pv="Yeap")
         
         # initialise fluids
-        fluid1 = Fluid(m=m1mean, Cp=1900, rho=900, Ti=T1mean, k=0.12, mu=4e-6 * 900)
-        fluid2 = Fluid(m=m2mean, Cp=4180, rho=1000, Ti=T2mean, k=0.7, mu=8.9e-4)
+        fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
+        fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
         
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,
@@ -69,19 +69,19 @@ def main():
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'m' + uq_mode + 'TiM'}")
         
         # initialise HEX
-        hex = HEX(L=6.1, ri=9.93e-3, ro=12.7e-3, R=20e-3)
+        hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
         n = hex.n
         dx = hex.dx
         T0 = hex.T0
         x = np.linspace(dx / 2, hex.L - dx / 2, n)
 
         #initialise fouling layers
-        depo1 = Fouling(pv="EP")
-        depo2 = Fouling(pv="EP")
+        depo1 = Fouling(pv="Yeap")
+        depo2 = Fouling(pv="Yeap")
         
         # initialise fluids
-        fluid1 = Fluid(m=0.3, Cp=1900, rho=900, Ti=473, k=0.12, mu=4e-6 * 900)
-        fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.7, mu=8.9e-4)
+        fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
+        fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
         
         for k in range(1, days + 1):
             run_HEX(dfs, dpath, k, d_save,

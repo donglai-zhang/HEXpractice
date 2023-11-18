@@ -5,7 +5,7 @@ from utils.HexClasses import HEX, Fluid
 from scipy.optimize import fsolve
 from pathlib import Path
 
-def main():
+def main(d_path, s_path):
     # initialise HEX
     hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3, n=1)
 
@@ -17,15 +17,10 @@ def main():
     f_type: 0 - parallel, 1 - counter
      mode: cinlet/rinlet: constant or random inlet
     '''
-    f_type = 0
-    mode = "rinlet"
-    d_path = Path(f"../../py_data/HEXPractice/lumpHEX/{mode}")
+    
+    dfs = pd.read_csv(d_path, header=0)
+    df2 = pd.DataFrame([])
 
-    if f_type == 0:
-        dfs = pd.read_csv(f"{d_path}/parallel.csv", header=0)
-    elif f_type == 1:
-        dfs = pd.read_csv(f"{d_path}/counter.csv", header=0)
-        
     T1i = dfs["F1i"]       # Fluid1 (cold) inlet temperature
     T1o = dfs["F1o"]       # Fluid1 (cold) outlet temperature
     m1 = dfs["F1m"]        # Fluid1 (cold) mass flow rate
@@ -96,27 +91,52 @@ def main():
     
     k_sol = solve_k()
     
+    df2["F12"] = T1i
+    df2["F1o"] = T1o 
+    df2["F1m"] = m1
+    df2["F2i"] = T2i 
+    df2["F2o"] = T2o
+    df2["F2m"] = m2
+    df2["Sigma1_p"] = sigma_sol
+    df2["k_p"] = k_sol
+    
+    df2.to_csv(s_path, index=False, header=True)
+    
     # make plots
-    fig, ax = plt.subplots(1, 2)
-    fig.set_figheight(6)
-    fig.set_figwidth(15)
+    # fig, ax = plt.subplots(1, 2)
+    # fig.set_figheight(6)
+    # fig.set_figwidth(15)
     
-    x = dfs["Day"].to_numpy()
+    # x = dfs["Day"].to_numpy()
         
-    ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
-    ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
-    ax[0].set_ylabel("Thickness (m)")
-    ax[0].set_xlabel("Days")
-    ax[0].legend()
+    # ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
+    # ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
+    # ax[0].set_ylabel("Thickness (m)")
+    # ax[0].set_xlabel("Days")
+    # ax[0].legend()
     
-    ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
-    ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
-    ax[1].set_ylabel("Conductivity (W/m*k)")
-    ax[1].set_xlabel("Days")
-    ax[1].legend()
+    # ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
+    # ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
+    # ax[1].set_ylabel("Conductivity (W/m*k)")
+    # ax[1].set_xlabel("Days")
+    # ax[1].legend()
     
-    plt.ylim(0.18, 0.22)
-    plt.show()
+    # plt.ylim(0.18, 0.22)
+    # plt.show()
 
 if __name__ == '__main__':
-    main()
+    d_path = Path("../../py_data/HEXPractice/UQ")
+    s_path = Path("../../py_data/HEXPractice/UQpred")
+    ran = "uniform"
+    f_type = 1
+    fnames = ["mMTiM", "mMTiL", "mMTiH","mLTiM", "mHTiM"]
+    
+    for fname in fnames:
+        # Path(f"{s_path}/{ran}/{fname}").mkdir(parents=True, exist_ok=True) 
+        if f_type == 1:
+            r_csv = Path(f"{d_path}/{ran}/{fname}/parallel.csv")
+            s_csv = Path(f"{s_path}/{ran}/{fname}/parallel.csv")
+        elif f_type == 0:
+            r_csv = Path(f"{d_path}/{ran}/{fname}/counter.csv")
+            s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
+        main(r_csv, s_csv)
