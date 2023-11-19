@@ -13,7 +13,7 @@ def main():
     
 
     # initialise HEX
-    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
+    hex = HEX(L=6.1, ri=22.9e-3 / 2, ro=25.4e-3 / 2, R=50e-3 / 2)
     n = hex.n
     dx = hex.dx
     T0 = hex.T0
@@ -34,7 +34,7 @@ def main():
     f_type = 1       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
-    ran = 1          # 1 - random inlet temperatures and flow rates
+    ran = 0          # 1 - random inlet temperatures and flow rates
     
     # random variables
     T1mean = fluid1.Ti      # if ran == 1, mean temperature of fluid 1 

@@ -17,7 +17,7 @@ def main():
     T2mean = 603
     m1mean = 0.3            # etc.
     m2mean = 0.5
-    ran_mode = "norm"       # random sampling mode, "norm" or "uniform"
+    ran_mode = "uniform"       # random sampling mode, "norm" or "uniform"
     uq_modes = ["L", "M", "H"]
     m_diffs = [0.1, 0.3, 0.5]       # differences of random data
     Ti_diffs = [0.05, 0.1, 0.15]
@@ -39,7 +39,7 @@ def main():
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'mM' + 'Ti' + uq_mode}")
         
         # initialise HEX
-        hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
+        hex = HEX(L=6.1, ri=22.9e-3 / 2, ro=25.4e-3 / 2, R=50e-3 / 2)
         n = hex.n
         dx = hex.dx
         T0 = hex.T0
@@ -69,7 +69,7 @@ def main():
         dpath = Path(f"../../py_data/HEXPractice/UQ/{ran_mode}/{'m' + uq_mode + 'TiM'}")
         
         # initialise HEX
-        hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3)
+        hex = HEX(L=6.1, ri=22.9e-3 / 2, ro=25.4e-3 / 2, R=50e-3 / 2)
         n = hex.n
         dx = hex.dx
         T0 = hex.T0

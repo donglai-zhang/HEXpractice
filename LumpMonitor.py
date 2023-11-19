@@ -5,9 +5,9 @@ from utils.HexClasses import HEX, Fluid
 from scipy.optimize import fsolve
 from pathlib import Path
 
-def main(d_path, s_path):
+def main(d_path, s_path, f_type):
     # initialise HEX
-    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3, n=1)
+    hex = HEX(L=6.1, ri=22.9e-3 / 2, ro=25.4e-3 / 2, R=50e-3 / 2, n=1)
 
     # initialise fluids
     fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
@@ -121,7 +121,7 @@ def main(d_path, s_path):
     # ax[1].set_xlabel("Days")
     # ax[1].legend()
     
-    # plt.ylim(0.18, 0.22)
+    # plt.ylim(0.199, 0.201)
     # plt.show()
 
 if __name__ == '__main__':
@@ -132,11 +132,17 @@ if __name__ == '__main__':
     fnames = ["mMTiM", "mMTiL", "mMTiH","mLTiM", "mHTiM"]
     
     for fname in fnames:
-        # Path(f"{s_path}/{ran}/{fname}").mkdir(parents=True, exist_ok=True) 
-        if f_type == 1:
+        Path(f"{s_path}/{ran}/{fname}").mkdir(parents=True, exist_ok=True) 
+        if f_type == 0:
             r_csv = Path(f"{d_path}/{ran}/{fname}/parallel.csv")
             s_csv = Path(f"{s_path}/{ran}/{fname}/parallel.csv")
-        elif f_type == 0:
+        elif f_type == 1:
             r_csv = Path(f"{d_path}/{ran}/{fname}/counter.csv")
             s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
-        main(r_csv, s_csv)
+        main(r_csv, s_csv, f_type)
+    
+    # d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
+    # d_path = Path("../../py_data/HEXPractice/UQ/norm/mHTiM/parallel.csv")
+    # s_path = None
+    # main(d_path, s_path, 0)
+    

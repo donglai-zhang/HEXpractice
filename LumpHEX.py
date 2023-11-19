@@ -72,7 +72,7 @@ def main():
     Load data, suppose we only have monitoring data of inlet temeratures and mass rates
     '''
     # initialise HEX
-    hex = HEX(L=6.1, ri=22.9e-3, ro=25.4e-3, R=50e-3, n=1)
+    hex = HEX(L=6.1, ri=22.9e-3 / 2, ro=25.4e-3 / 2, R=50e-3 / 2, n=1)
 
     # initialise fluids
     fluid1 = Fluid(m=0.3, Cp=2916, rho=680, Ti=523, k=0.12, mu=4e-6 * 680)
@@ -87,7 +87,7 @@ def main():
     d_path = Path("../../py_data/HEXPractice/disHEX")
 
     # mode: cinlet/rinlet: constant or random inlet
-    mode = "rinlet"
+    mode = "cinlet"
     s_path = Path(f"{d_path}/../lumpHEX/{mode}")
 
     if f_type == 0:
