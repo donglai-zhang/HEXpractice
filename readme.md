@@ -20,7 +20,7 @@ File Structure
     - lumpHEX: Lumped HEX
       - cinlet
       - rinlet
-    - UQ: uncertainty qualification
+    - UQ: uncertainty quatification
       - norm: random sampling from normal distribution
         - mLTiM: Low uncertain m, middle uncertain Ti
         - mMTiM: Middle uncertain m, middle uncertain Ti
@@ -29,7 +29,7 @@ File Structure
         - mMTiH
       - uniform: ... from uniform distribution
         ...
-    - UQ: prediciton of uncertainty qualified data
+    - UQ: prediciton of uncertainty quatified data
 
 DistrubutedHEX:
   Some key notes
