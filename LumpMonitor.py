@@ -68,7 +68,7 @@ def main(d_path, s_path, f_type):
         Cf = fluid1.get_Fricion(Re)
         return Cf  / D1 * fluid1.rho * v1 ** 2 / 2  - dp1 / hex.dx
     
-    guess_sigma = (1e-5) * np.ones(len(dfs))
+    guess_sigma = (1e-7) * np.ones(len(dfs))
     sigma_sol = fsolve(solve_sigma, guess_sigma)
     
     # predict fouling layer conductivity
@@ -142,7 +142,5 @@ if __name__ == '__main__':
         main(r_csv, s_csv, f_type)
     
     # d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
-    # d_path = Path("../../py_data/HEXPractice/UQ/norm/mHTiM/parallel.csv")
     # s_path = None
     # main(d_path, s_path, 0)
-    

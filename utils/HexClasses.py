@@ -76,6 +76,7 @@ class Fluid:
     get fluid velocity
     inputs
     Ac: flow crosectional area 
+    
     '''
     def get_Velocity(self, Ac):
         return self.V / Ac     # m/s, flow velocity
@@ -109,9 +110,10 @@ class Fluid:
     '''
     get friction factor
     developed laminar flow: Cf = 64 / Re
+    developed turbulent flow: Cf = (0.790 ln(e) - 1.64)^-2
     '''
     def get_Fricion(self, Re):
-        return 0.0036 + 0.264 * np.power(Re, -0.42)
+        return np.power(0.790 * np.log(Re) - 1.64, -2)
     
     '''
     get shear stress

@@ -26,7 +26,7 @@ def main():
     '''
     start simulation
     '''
-    f_type = 1       # flow type: 0 - parallel, 1 - counter
+    f_type = 0       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
 

@@ -83,11 +83,11 @@ def main():
     depo2 = Fouling(pv="Yeap")
     
     # f_type: 0 - parallel, 1 - counter
-    f_type = 1
+    f_type = 0
     d_path = Path("../../py_data/HEXPractice/disHEX")
 
     # mode: cinlet/rinlet: constant or random inlet
-    mode = "cinlet"
+    mode = "rinlet"
     s_path = Path(f"{d_path}/../lumpHEX/{mode}")
 
     if f_type == 0:
