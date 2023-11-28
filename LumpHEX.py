@@ -22,13 +22,9 @@ def Simulation(dfs, day, dgen, f_type, hex,
     fluid2.get_Prams(hex.Ac2, hex.D2, hex.As2)
     UA = 1 / (fluid1.R + depo1.Rf / hex.As1 + hex.dRwall + depo2.Rf / hex.As2 + fluid2.R)   # W*m^2/n^2*k Overall heat transfer coefficient times surface area (1 / Total Resistance)
     
-    # pressure drops
-    dP1dx = fluid1.get_PressureDrop(fluid1.Cf, hex.D1, fluid1.v)
-    dP2dx = fluid2.get_PressureDrop(fluid2.Cf, hex.D2, fluid2.v)
-    
     dgen.append_Vars(day + 1, np.sum(UA), 
-        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.Cf, fluid1.tau, dP1dx * hex.dx, depo1.sigma, depo1.Rf,
-        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.Cf, fluid2.tau, dP2dx * hex.dx, depo2.sigma, depo2.Rf)
+        t1i, m1i, fluid1.v, hex.D1, fluid1.Re, fluid1.Nu, fluid1.h, fluid1.Cf, fluid1.tau, fluid1.dPdx * hex.dx, depo1.sigma, depo1.Rf,
+        t2i, m2i, fluid2.v, hex.D2, fluid2.Re, fluid2.Nu, fluid2.h, fluid2.Cf, fluid2.tau, fluid2.dPdx * hex.dx, depo2.sigma, depo2.Rf)
 
     '''
     Function for solving outlets

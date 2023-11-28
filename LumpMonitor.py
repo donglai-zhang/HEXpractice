@@ -66,7 +66,7 @@ def main(d_path, s_path, f_type):
         v1 = Vol1 / Ac1
         Re = fluid1.get_Re(v1, D1)
         Cf = fluid1.get_Fricion(Re)
-        return Cf  / D1 * fluid1.rho * v1 ** 2 / 2  - dp1 / hex.dx
+        return 4 * Cf  / D1 * fluid1.rho * v1 ** 2 / 2  - dp1 / hex.dx
     
     guess_sigma = (1e-7) * np.ones(len(dfs))
     sigma_sol = fsolve(solve_sigma, guess_sigma)
@@ -100,47 +100,47 @@ def main(d_path, s_path, f_type):
     df2["Sigma1_p"] = sigma_sol
     df2["k_p"] = k_sol
     
-    df2.to_csv(s_path, index=False, header=True)
+    # df2.to_csv(s_path, index=False, header=True)
     
     # make plots
-    # fig, ax = plt.subplots(1, 2)
-    # fig.set_figheight(6)
-    # fig.set_figwidth(15)
+    fig, ax = plt.subplots(1, 2)
+    fig.set_figheight(6)
+    fig.set_figwidth(15)
     
-    # x = dfs["Day"].to_numpy()
+    x = dfs["Day"].to_numpy()
         
-    # ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
-    # ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
-    # ax[0].set_ylabel("Thickness (m)")
-    # ax[0].set_xlabel("Days")
-    # ax[0].legend()
+    ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
+    ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
+    ax[0].set_ylabel("Thickness (m)")
+    ax[0].set_xlabel("Days")
+    ax[0].legend()
     
-    # ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
-    # ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
-    # ax[1].set_ylabel("Conductivity (W/m*k)")
-    # ax[1].set_xlabel("Days")
-    # ax[1].legend()
+    ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
+    ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
+    ax[1].set_ylabel("Conductivity (W/m*k)")
+    ax[1].set_xlabel("Days")
+    ax[1].legend()
     
-    # plt.ylim(0.199, 0.201)
-    # plt.show()
+    plt.ylim(0.199, 0.201)
+    plt.show()
 
 if __name__ == '__main__':
-    d_path = Path("../../py_data/HEXPractice/UQ")
-    s_path = Path("../../py_data/HEXPractice/UQpred")
-    ran = "uniform"
-    f_type = 1
-    fnames = ["mMTiM", "mMTiL", "mMTiH","mLTiM", "mHTiM"]
+    # d_path = Path("../../py_data/HEXPractice/UQ")
+    # s_path = Path("../../py_data/HEXPractice/UQpred")
+    # ran = "uniform"
+    # f_type = 1
+    # fnames = ["mMTiM", "mMTiL", "mMTiH","mLTiM", "mHTiM"]
     
-    for fname in fnames:
-        Path(f"{s_path}/{ran}/{fname}").mkdir(parents=True, exist_ok=True) 
-        if f_type == 0:
-            r_csv = Path(f"{d_path}/{ran}/{fname}/parallel.csv")
-            s_csv = Path(f"{s_path}/{ran}/{fname}/parallel.csv")
-        elif f_type == 1:
-            r_csv = Path(f"{d_path}/{ran}/{fname}/counter.csv")
-            s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
-        main(r_csv, s_csv, f_type)
+    # for fname in fnames:
+    #     Path(f"{s_path}/{ran}/{fname}").mkdir(parents=True, exist_ok=True) 
+    #     if f_type == 0:
+    #         r_csv = Path(f"{d_path}/{ran}/{fname}/parallel.csv")
+    #         s_csv = Path(f"{s_path}/{ran}/{fname}/parallel.csv")
+    #     elif f_type == 1:
+    #         r_csv = Path(f"{d_path}/{ran}/{fname}/counter.csv")
+    #         s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
+    #     main(r_csv, s_csv, f_type)
     
-    # d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
-    # s_path = None
-    # main(d_path, s_path, 0)
+    d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
+    s_path = None
+    main(d_path, s_path, 0)

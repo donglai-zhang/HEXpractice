@@ -113,7 +113,7 @@ class Fluid:
     developed turbulent flow: Cf = (0.790 ln(e) - 1.64)^-2
     '''
     def get_Fricion(self, Re):
-        return np.power(0.790 * np.log(Re) - 1.64, -2)
+        return 0.0791 * np.power(Re, -0.25)
     
     '''
     get shear stress
@@ -121,6 +121,14 @@ class Fluid:
     '''
     def get_Shear(self, Cf, v):
         return  Cf * self.rho * v ** 2 / 2
+    
+    ''' 
+    get pressure drop
+    dP/dL = Cf / D * rho * v ** 2 / 2
+    '''
+    def get_PressureDrop(self, Cf, D, tau):
+        return 4 * tau / D
+    
     
     ''' 
     get All parameters
@@ -134,13 +142,7 @@ class Fluid:
         self.R = 1 / (self.h * As)          # K/W, thermal resistance
         self.Cf = self.get_Fricion(self.Re)
         self.tau = self.get_Shear(self.Cf, self.v)
-    
-    ''' 
-    get pressure drop
-    dP/dL = Cf / D * rho * v ** 2 / 2
-    '''
-    def get_PressureDrop(self, Cf, D, v):
-        return Cf / D * self.rho * v ** 2 / 2
+        self.dPdx = self.get_PressureDrop(self.Cf, D, self.tau)
 
 class Fouling:
     def __init__(self,
@@ -171,17 +173,15 @@ class Fouling:
         if self.pv == "EP":
             # EP version
             self.alpha = 0.0139
-            self.beta = -0.66
             self.gamma = 4.03e-11
             self.Ef = 48000
         if self.pv == "Yeap":
             # EP version
             self.alpha = 0.0011
-            self.beta = -0.66
             self.gamma = 7.3e-12
             self.Ef = 28000
         
-        return self.alpha * np.power(Re, self.beta) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
+        return self.alpha * np.power(Re, -0.66) * np.power(Pr, -0.33) * np.exp(- self.Ef / (self.Rg * Tf)) - self.gamma * tau        # threshold fouling
     
     '''
     start to simulate fouling
