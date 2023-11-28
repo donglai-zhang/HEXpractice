@@ -91,7 +91,7 @@ def main(d_path, s_path, f_type):
     
     k_sol = solve_k()
     
-    df2["F12"] = T1i
+    df2["F1i"] = T1i
     df2["F1o"] = T1o 
     df2["F1m"] = m1
     df2["F2i"] = T2i 
@@ -100,29 +100,28 @@ def main(d_path, s_path, f_type):
     df2["Sigma1_p"] = sigma_sol
     df2["k_p"] = k_sol
     
-    # df2.to_csv(s_path, index=False, header=True)
+    df2.to_csv(s_path, index=False, header=True)
     
     # make plots
-    fig, ax = plt.subplots(1, 2)
-    fig.set_figheight(6)
-    fig.set_figwidth(15)
+    # fig, ax = plt.subplots(1, 2)
+    # fig.set_figheight(6)
+    # fig.set_figwidth(15)
     
-    x = dfs["Day"].to_numpy()
+    # x = dfs["Day"].to_numpy()
         
-    ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
-    ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
-    ax[0].set_ylabel("Thickness (m)")
-    ax[0].set_xlabel("Days")
-    ax[0].legend()
+    # ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
+    # ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
+    # ax[0].set_ylabel("Thickness (m)")
+    # ax[0].set_xlabel("Days")
+    # ax[0].legend()
     
-    ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
-    ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
-    ax[1].set_ylabel("Conductivity (W/m*k)")
-    ax[1].set_xlabel("Days")
-    ax[1].legend()
+    # ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
+    # ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
+    # ax[1].set_ylabel("Conductivity (W/m*k)")
+    # ax[1].set_xlabel("Days")
+    # ax[1].legend()
     
-    plt.ylim(0.199, 0.201)
-    plt.show()
+    # plt.show()
 
 if __name__ == '__main__':
     # d_path = Path("../../py_data/HEXPractice/UQ")
@@ -141,6 +140,15 @@ if __name__ == '__main__':
     #         s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
     #     main(r_csv, s_csv, f_type)
     
-    d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
-    s_path = None
-    main(d_path, s_path, 0)
+    # d_path = Path("../../py_data/HEXPractice/RN/case3/rndata_h.csv")
+    # s_path = None
+    # main(d_path, s_path, 0)
+    
+    cases = [1, 2, 3]
+    levels = ['l', 'm', 'h']
+    
+    for case in cases:
+        for level in levels:
+            d_path = Path(f"../../py_data/HEXPractice/RN/case{case}/rndata_{level}.csv")
+            s_path = Path(f"../../py_data/HEXPractice/RN/case{case}/preds_{level}.csv")
+            main(d_path, s_path, 0)

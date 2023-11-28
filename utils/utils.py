@@ -59,6 +59,16 @@ def gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, 
     
     fluid1.get_Inlets(T1i, m1)
     fluid2.get_Inlets(T2i, m2)
+    
+def gen_RanInlets2(T1mean, m1mean, T2mean, m2mean, Tdiff, mdiff, func, T1o, T2o):
+    while (True):
+        T1i, m1 = func(T1mean, m1mean, Tdiff, mdiff)
+        T2i, m2 = func(T2mean, m2mean, Tdiff, mdiff)
+        
+        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and T1i < T1o and T2i > T2o:
+            break
+    
+    return T1i, T2i, m1, m2
 
 '''
 export daily data vs. HEX distance
