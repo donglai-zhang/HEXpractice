@@ -60,12 +60,18 @@ def gen_RanInlets(fluid1, T1mean, m1mean, fluid2, T2mean, m2mean, Tdiff, mdiff, 
     fluid1.get_Inlets(T1i, m1)
     fluid2.get_Inlets(T2i, m2)
     
-def gen_RanInlets2(T1mean, m1mean, T2mean, m2mean, Tdiff, mdiff, func, T1o, T2o):
+def gen_RanInlets2(T1mean, m1mean, T2mean, m2mean, Tdiff, mdiff, endiff, func, T1o, T2o):
+    en1 = m1mean * T1mean
+    en2 = m2mean * T2mean
+    en_diff1 = en1 * endiff
+    en_diff2 = en1 * endiff
     while (True):
         T1i, m1 = func(T1mean, m1mean, Tdiff, mdiff)
         T2i, m2 = func(T2mean, m2mean, Tdiff, mdiff)
+        en1_new = m1 * T1i 
+        en2_new = m2 * T2i
         
-        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and T1i < T1o and T2i > T2o:
+        if m1 > 0 and m2 > 0 and T1i > 0 and T2i > 0 and T2i > T1i and T1i < T1o and T2i > T2o and np.abs(en1 - en1_new) < en_diff1 and np.abs(en2 - en2_new) < en_diff2:
             break
     
     return T1i, T2i, m1, m2

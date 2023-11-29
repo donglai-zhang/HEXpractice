@@ -109,14 +109,14 @@ def main(d_path, s_path, f_type):
     
     # x = dfs["Day"].to_numpy()
         
-    # ax[0].plot(x, sigma_sol, c="blue", alpha=0.7, label="Predicted fouling thickness")
-    # ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, label="True fouling thickness")
+    # ax[0].plot(x, dfs["Sigma1"].to_numpy(), c="red", alpha=0.7, linewidth=3, label="True fouling thickness")
+    # ax[0].plot(x, sigma_sol, c="black", alpha=0.7, label="Predicted fouling thickness")
     # ax[0].set_ylabel("Thickness (m)")
     # ax[0].set_xlabel("Days")
     # ax[0].legend()
     
-    # ax[1].plot(x, k_sol.to_numpy(),  c="blue", alpha=0.7, label="Predicted deposit conductivity")
-    # ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, label="True deposit conductivity")
+    # ax[1].plot(x, 0.2 * np.ones(len(dfs)), c="red", alpha=0.7, linewidth=3, label="True deposit conductivity")
+    # ax[1].plot(x, k_sol.to_numpy(),  c="black", alpha=0.7, label="Predicted deposit conductivity")
     # ax[1].set_ylabel("Conductivity (W/m*k)")
     # ax[1].set_xlabel("Days")
     # ax[1].legend()
@@ -140,12 +140,12 @@ if __name__ == '__main__':
     #         s_csv = Path(f"{s_path}/{ran}/{fname}/counter.csv")
     #     main(r_csv, s_csv, f_type)
     
-    # d_path = Path("../../py_data/HEXPractice/RN/case3/rndata_h.csv")
+    # d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
     # s_path = None
     # main(d_path, s_path, 0)
     
     cases = [1, 2, 3]
-    levels = ['l', 'm', 'h']
+    levels = ['l', 'm', 'h', "full"]
     
     for case in cases:
         for level in levels:

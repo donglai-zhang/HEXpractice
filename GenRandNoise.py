@@ -23,12 +23,13 @@ def main(d_path, s_path, level, nlevel):
     
     for i in range(n):
         if i in idx:
-            T1i[i], T2i[i], m1[i], m2[i] = gen_RanInlets2(T1i[i], m1[i], T2i[i], m2[i], 0.1, 0.3, gen_Normal, T1o[i], T2o[i])
+            T1i[i], T2i[i], m1[i], m2[i] = gen_RanInlets2(T1i[i], m1[i], T2i[i], m2[i], 0.05, 0.1, 0.1, gen_Normal, T1o[i], T2o[i])
     
     # save data
     dfs1 = df.copy()
     dfs2 = df.copy()
     dfs3 = df.copy()
+    dfs4 = df.copy()
     # case 1, noisy temperatures
     dfs1["F1i"] = T1i
     dfs1["F2i"] = T2i
@@ -47,8 +48,8 @@ def main(d_path, s_path, level, nlevel):
     dfs3.to_csv(f"{s_path}/case3/rndata_{level}.csv", index=False, header=True)
     
 if __name__ == '__main__':
-    levels = ['l', 'm', 'h']
-    nlevels = [0.05, 0.1, 0.2]
+    levels = ['l', 'm', 'h', "full"]
+    nlevels = [0.05, 0.1, 0.2, 1]
     d_path = Path("../../py_data/HEXPractice/lumpHEX/rinlet/parallel.csv")
     s_path = Path ("../../py_data/HEXPractice/RN")
     

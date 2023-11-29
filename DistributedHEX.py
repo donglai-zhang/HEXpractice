@@ -31,10 +31,10 @@ def main():
     fluid2 = Fluid(m=0.5, Cp=4180, rho=1000, Ti=603, k=0.6, mu=8.9e-4)
     
     # start simulation
-    f_type = 0       # flow type: 0 - parallel, 1 - counter
+    f_type = 1       # flow type: 0 - parallel, 1 - counter
     days = 200       # running days
     d_save = [1, 50, 100, 150, 200]        # days to record daily data of each distributed control volumes
-    ran = 1          # 1 - random inlet temperatures and flow rates
+    ran = 0          # 1 - random inlet temperatures and flow rates
     
     # random variables
     T1mean = fluid1.Ti      # if ran == 1, mean temperature of fluid 1 
