@@ -23,13 +23,15 @@ def main(d_path, s_path, level, nlevel):
     
     for i in range(n):
         if i in idx:
-            T1i[i], T2i[i], m1[i], m2[i] = gen_RanInlets2(T1i[i], m1[i], T2i[i], m2[i], 0.05, 0.1, 0.1, gen_Normal, T1o[i], T2o[i])
+            T1i[i] += np.random.uniform(-0.25, 0.25)
+            T2i[i] += np.random.uniform(-0.25, 0.25)
+            m1[i] += np.random.uniform(- 0.15 * m1[i], 0.15 * m1[i])
+            m2[i] += np.random.uniform(- 0.15 * m2[i], 0.15 * m2[i])
     
     # save data
     dfs1 = df.copy()
     dfs2 = df.copy()
     dfs3 = df.copy()
-    dfs4 = df.copy()
     # case 1, noisy temperatures
     dfs1["F1i"] = T1i
     dfs1["F2i"] = T2i
